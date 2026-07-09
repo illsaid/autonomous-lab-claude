@@ -82,6 +82,38 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("commands:", out)
 
+    def test_rank_runs_and_lists_all_candidates(self):
+        code, out, err = run_cli("rank")
+        self.assertEqual(code, 0, err)
+        with DATA.open() as f:
+            ids = [json.loads(line)["id"] for line in f if line.strip()]
+        for candidate_id in ids:
+            self.assertIn(candidate_id, out)
+        self.assertIn("ranked by interest_score", out)
+
+    def test_rank_output_order_matches_score_sort(self):
+        from workshop import interest_score, load_candidates
+        items = load_candidates()
+        expected_order = [
+            item["id"] for item in sorted(items, key=interest_score, reverse=True)
+        ]
+        code, out, err = run_cli("rank")
+        self.assertEqual(code, 0, err)
+        actual_order = [
+            candidate_id
+            for line in out.splitlines()
+            for candidate_id in expected_order
+            if candidate_id in line
+        ]
+        self.assertEqual(actual_order, expected_order)
+
+    def test_interest_score_prefers_permissive_license(self):
+        from workshop import interest_score
+        base = {"stars": 300, "pushed_at": "2020-01-01", "topics": []}
+        permissive = dict(base, license="MIT")
+        proprietary = dict(base, license="Custom")
+        self.assertGreater(interest_score(permissive), interest_score(proprietary))
+
 
 if __name__ == "__main__":
     unittest.main()

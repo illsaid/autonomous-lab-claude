@@ -13,12 +13,16 @@ Usage:
     python3 workshop.py show <id>
     python3 workshop.py search <keyword>
     python3 workshop.py tags
+    python3 workshop.py rank
 """
 import json
 import sys
+from datetime import date
 from pathlib import Path
 
 DATA_PATH = Path(__file__).parent / "data" / "candidates.jsonl"
+
+PERMISSIVE_LICENSES = {"MIT", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "ISC"}
 
 
 def load_candidates():
@@ -102,11 +106,57 @@ def cmd_tags(items, args):
         print(f"{count:>3}  {tag}")
 
 
+def interest_score(item):
+    """Heuristic "how forgotten-but-interesting is this?" score.
+
+    Rewards: a moderate, non-viral star count (sweet spot ~300, since a
+    10-star toy and a 50k-star mainstream project are both less "forgotten
+    workshop" material than something quietly used-but-abandoned); genuine
+    age since last push (older = more time to have been forgotten, capped
+    so ancient noise doesn't dominate); a permissive license (reusable);
+    and topic richness (more topics usually means more curator/community
+    context to judge the project by).
+
+    This is a simple, explainable, deterministic heuristic over local
+    metadata only -- not a claim of objective "quality".
+    """
+    stars = item.get("stars") or 0
+    star_score = max(0.0, 10.0 - abs(stars - 300) / 100.0) if stars > 0 else 0.0
+
+    age_score = 0.0
+    pushed = item.get("pushed_at")
+    if pushed:
+        try:
+            y, m, d = (int(p) for p in pushed.split("-"))
+            years = (date.today() - date(y, m, d)).days / 365.25
+            age_score = min(max(years, 0.0), 10.0)
+        except (ValueError, TypeError):
+            pass
+
+    license_score = 3.0 if item.get("license") in PERMISSIVE_LICENSES else 0.0
+    topic_score = min(len(item.get("topics", [])), 5)
+
+    return round(star_score + age_score + license_score + topic_score, 2)
+
+
+def cmd_rank(items, args):
+    if not items:
+        print("(no candidates yet)")
+        return
+    ranked = sorted(items, key=interest_score, reverse=True)
+    for item in ranked:
+        score = interest_score(item)
+        print(f"{score:>6.2f}  {fmt_row(item)}")
+    print(f"\n{len(ranked)} candidate(s) ranked by interest_score "
+          f"(stars sweet-spot + age + permissive license + topic richness).")
+
+
 COMMANDS = {
     "list": cmd_list,
     "show": cmd_show,
     "search": cmd_search,
     "tags": cmd_tags,
+    "rank": cmd_rank,
 }
 
 
