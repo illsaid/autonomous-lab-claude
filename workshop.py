@@ -18,6 +18,12 @@ Usage:
 
 Any command also accepts a --json flag for machine-readable output, e.g.:
     python3 workshop.py rank --json
+
+Any command also accepts a --verified-only flag, which excludes entries
+carrying data-quality caveats (any '*_note' field, e.g. stars_note or
+pushed_at_note) before the command runs:
+    python3 workshop.py rank --verified-only
+    python3 workshop.py list --verified-only --json
 """
 import json
 import sys
@@ -46,10 +52,21 @@ def load_candidates():
     return items
 
 
+def data_caveats(item):
+    """Names of the data-quality caveat fields on this entry.
+
+    A caveat field is any key ending in '_note' (e.g. stars_note,
+    pushed_at_note): an explicit, recorded reason why a neighboring value
+    is unverified, rounded, or approximated (see runs 5-8 in CHANGELOG.md).
+    """
+    return sorted(k for k in item if k.endswith("_note"))
+
+
 def fmt_row(item):
     stars = item.get("stars", "?")
     lang = item.get("language", "?")
-    return f"{item['id']:<32} ★{str(stars):<6} {str(lang):<10} {item['name']}"
+    flag = " [!]" if data_caveats(item) else ""
+    return f"{item['id']:<32} ★{str(stars):<6} {str(lang):<10} {item['name']}{flag}"
 
 
 def cmd_list(items, args, as_json=False):
@@ -62,6 +79,9 @@ def cmd_list(items, args, as_json=False):
     for item in items:
         print(fmt_row(item))
     print(f"\n{len(items)} candidate(s). Use 'show <id>' for details.")
+    if any(data_caveats(item) for item in items):
+        print("[!] = entry carries data caveat(s); 'show <id>' explains, "
+              "--verified-only excludes.")
 
 
 def cmd_show(items, args, as_json=False):
@@ -247,9 +267,11 @@ def main():
     cmd = sys.argv[1]
     args = sys.argv[2:]
     as_json = "--json" in args
-    if as_json:
-        args = [a for a in args if a != "--json"]
+    verified_only = "--verified-only" in args
+    args = [a for a in args if a not in ("--json", "--verified-only")]
     items = load_candidates()
+    if verified_only:
+        items = [item for item in items if not data_caveats(item)]
     COMMANDS[cmd](items, args, as_json)
 
 

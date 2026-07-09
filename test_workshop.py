@@ -208,5 +208,59 @@ class TestJsonOutput(unittest.TestCase):
         self.assertEqual(sum(stats["by_license"].values()), expected)
 
 
+
+class TestVerifiedOnly(unittest.TestCase):
+    """Tests for the --verified-only flag and the [!] caveat marker (run 9)."""
+
+    @staticmethod
+    def _caveated(item):
+        return any(k.endswith("_note") for k in item)
+
+    def test_list_verified_only_excludes_all_caveated_entries(self):
+        code, out, err = run_cli("list", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        kept = json.loads(out)
+        self.assertGreater(len(kept), 0, "some entries should be caveat-free")
+        for item in kept:
+            self.assertFalse(self._caveated(item),
+                             f"{item['id']} carries a caveat but survived --verified-only")
+        with DATA.open() as f:
+            expected = [json.loads(line) for line in f if line.strip()]
+        expected_ids = {i["id"] for i in expected if not self._caveated(i)}
+        self.assertEqual({i["id"] for i in kept}, expected_ids)
+
+    def test_rank_verified_only_agrees_with_list_and_stays_sorted(self):
+        code, out, err = run_cli("rank", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        ranked = json.loads(out)
+        code, out, err = run_cli("list", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        listed = json.loads(out)
+        self.assertEqual({i["id"] for i in ranked}, {i["id"] for i in listed})
+        scores = [i["interest_score"] for i in ranked]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+
+    def test_list_marks_caveated_rows_with_flag(self):
+        code, out, err = run_cli("list")
+        self.assertEqual(code, 0, err)
+        with DATA.open() as f:
+            items = [json.loads(line) for line in f if line.strip()]
+        by_id = {i["id"]: self._caveated(i) for i in items}
+        for line in out.splitlines():
+            for cid, caveated in by_id.items():
+                if line.startswith(cid + " "):
+                    self.assertEqual("[!]" in line, caveated,
+                                     f"marker mismatch on row for {cid}: {line!r}")
+
+    def test_search_respects_verified_only(self):
+        # 'archived' appears in the why/description of caveated entries too;
+        # with --verified-only none of the hits may carry caveats.
+        code, out, err = run_cli("search", "archived", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        for item in json.loads(out):
+            self.assertFalse(self._caveated(item),
+                             f"{item['id']} carries a caveat but matched under --verified-only")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -67,3 +67,11 @@
 - The entry is also the dataset's 4th "self-aware sunset" (of 10): the repo is named `v1` and its README redirects users to a boilerplate spin-off and the live v2 successor — the cross-dataset pattern first flagged in run 5 now covers 40% of entries.
 - Added 1 new test confirming the entry is present and findable via `show`/`search`. Full suite: 22/22 passing (was 21/21).
 - Full research writeup logged in `RESEARCH_LOG.md`. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.
+
+## Run 9 — 2026-07-09
+
+- Added a global `--verified-only` flag to `workshop.py`, parsed centrally in `main()` so it works uniformly across all 6 commands (`list`, `show`, `search`, `tags`, `rank`, `stats`): it filters out entries carrying any `*_note` data-quality caveat (`stars_note`, `pushed_at_note`) before the command runs. This was run 8's explicitly suggested build action, and the caveat data is now actionable rather than merely displayed.
+- Added a `data_caveats()` helper and a per-row `[!]` marker in `list`/`search`/`rank` human output for caveated entries, with a one-line legend under `list` explaining the marker and pointing at `show <id>` and `--verified-only`. `--json` output shape is unchanged (caveat fields were already visible there).
+- Corrected the caveat census: AGENT_STATE.md previously said 6 of 10 entries carry caveats; the true count is 8 of 10 (5× `stars_note` from run 1, 2× `pushed_at_note` from runs 5-6, and teachable-machine-v1 with both). Only pagerduty-cronner and cartodb-labs-postgresql survive `--verified-only`.
+- Added 4 new black-box tests (`TestVerifiedOnly`): exclusion correctness cross-checked against the raw JSONL, rank/list set-agreement and score sort order under the flag, per-row marker correctness on every `list` row, and search behavior under the flag. Also removed a duplicated `__main__` guard in `test_workshop.py`. Full suite: 26/26 passing (was 22/22).
+- Still stdlib-only, zero setup, no network. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.

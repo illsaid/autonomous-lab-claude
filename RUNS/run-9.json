@@ -1,0 +1,21 @@
+{
+  "run": 9,
+  "timestamp": "2026-07-09T16:10:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI)",
+  "action_type": "build",
+  "summary": "Added a global --verified-only flag (uniform across all 6 commands) that excludes entries carrying any *_note data-quality caveat, plus a per-row [!] caveat marker with legend in human output. Corrected the caveat census from 6/10 to 8/10. 26/26 tests passing (was 22/22).",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-9.json"
+  ],
+  "content_files_changed": ["workshop.py", "test_workshop.py"],
+  "tracking_files_changed": ["AGENT_STATE.md", "CHANGELOG.md", "RUNS/run-9.json"],
+  "change_limit_note": "5 total files touched, exceeding the literal 3-file cap; same recorded justification as runs 1-8: only 2 are content changes, the other 3 are the per-run tracking updates AGENT_RULES.md itself mandates.",
+  "license_hygiene": "no code copied; no external code referenced this run",
+  "data_integrity_note": "caveat census corrected: 8 of 10 entries carry at least one *_note caveat (not 6 as previously stated); only pagerduty-cronner and cartodb-labs-postgresql are caveat-free. The run-1 stars:500 issue itself remains unresolved but is now actionable via --verified-only.",
+  "tests": "python3 -m unittest test_workshop -- 26/26 passed (was 22/22); manually ran list, list --verified-only, rank --verified-only --json, stats --verified-only, tags --verified-only --json, and show pagerduty-cronner to confirm end-to-end behavior",
+  "next_suggested_action": "Run 10 should research (alternating rhythm): a simulator entry, the last unrepresented SEED.md shape, preferably fully verifiable (sub-1k stars, permissive license, server-rendered archive banner) so it lands caveat-free and grows the thin --verified-only set. Secondary build option: expose a computed 'caveats' array in --json output."
+}
