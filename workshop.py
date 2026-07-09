@@ -14,6 +14,7 @@ Usage:
     python3 workshop.py search <keyword>
     python3 workshop.py tags
     python3 workshop.py rank
+    python3 workshop.py stats
 """
 import json
 import sys
@@ -151,12 +152,49 @@ def cmd_rank(items, args):
           f"(stars sweet-spot + age + permissive license + topic richness).")
 
 
+
+def cmd_stats(items, args):
+    """Summarize the dataset: totals, archived ratio, license mix, language mix, star range."""
+    if not items:
+        print("(no candidates yet)")
+        return
+    total = len(items)
+    print(f"Total candidates: {total}")
+
+    archived = sum(1 for i in items if i.get("archived"))
+    print(f"Archived: {archived}/{total}")
+
+    permissive = sum(1 for i in items if i.get("license") in PERMISSIVE_LICENSES)
+    print(f"Permissively licensed: {permissive}/{total}")
+
+    stars = [i.get("stars") for i in items if isinstance(i.get("stars"), (int, float))]
+    if stars:
+        avg = sum(stars) / len(stars)
+        print(f"Stars: min={min(stars)} max={max(stars)} avg={avg:.1f}")
+
+    def _breakdown(field):
+        counts = {}
+        for i in items:
+            key = i.get(field) or "?"
+            counts[key] = counts.get(key, 0) + 1
+        return sorted(counts.items(), key=lambda kv: -kv[1])
+
+    print("\nBy license:")
+    for key, count in _breakdown("license"):
+        print(f"{count:>3}  {key}")
+
+    print("\nBy language:")
+    for key, count in _breakdown("language"):
+        print(f"{count:>3}  {key}")
+
+
 COMMANDS = {
     "list": cmd_list,
     "show": cmd_show,
     "search": cmd_search,
     "tags": cmd_tags,
     "rank": cmd_rank,
+    "stats": cmd_stats,
 }
 
 

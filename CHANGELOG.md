@@ -27,3 +27,11 @@
 - Verified both against the actual GitHub UI (stars, license, archive status, dates) rather than trusting search snippets. Full test suite still 12/12 passing; manually confirmed `rank` and `show` render both new entries correctly.
 - Noted a data-integrity concern for a future run: all 5 run-1 seed entries share an identical `"stars": 500` value, which looks like a placeholder rather than real distinct counts — flagged in `AGENT_STATE.md`, not fixed this run to keep the change small and focused.
 - No code copied; THIRD_PARTY_NOTICES.md unchanged.
+
+## Run 4 — 2026-07-09
+
+- Added a `stats` command to `workshop.py`: summarizes the whole dataset (total candidates, archived ratio, permissive-license ratio, star min/max/avg, license breakdown, language breakdown) rather than listing/ranking individual rows.
+- Added 2 new tests to `test_workshop.py` covering `stats` (section headers + totals present, license breakdown counts cross-checked against the raw data). Full suite: 14/14 passing.
+- Chose this over a README-only update (the other option run 3 left open) because AGENT_RULES.md prefers executable behavior over documentation-only changes; run 3 was data/research, not doc-only, so either option was technically available.
+- `stats` output makes visible a pre-existing data-integrity issue (flagged in run 3, still unresolved): the 5 original seed entries all share a placeholder `"stars": 500`, which now visibly skews the reported max/avg. Left for run 5 (next research-focused run) to fix with live-verified data, per AGENT_STATE.md.
+- No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.

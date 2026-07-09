@@ -114,6 +114,24 @@ class TestCLI(unittest.TestCase):
         proprietary = dict(base, license="Custom")
         self.assertGreater(interest_score(permissive), interest_score(proprietary))
 
+    def test_stats_runs_and_reports_totals(self):
+        code, out, err = run_cli("stats")
+        self.assertEqual(code, 0, err)
+        with DATA.open() as f:
+            n = sum(1 for line in f if line.strip())
+        self.assertIn(f"Total candidates: {n}", out)
+        self.assertIn("By license:", out)
+        self.assertIn("By language:", out)
+
+    def test_stats_license_breakdown_matches_data(self):
+        code, out, err = run_cli("stats")
+        self.assertEqual(code, 0, err)
+        with DATA.open() as f:
+            licenses = [json.loads(line)["license"] for line in f if line.strip()]
+        mit_count = licenses.count("MIT")
+        self.assertIn(f"{mit_count:>3}  MIT", out)
+
+
 
 if __name__ == "__main__":
     unittest.main()

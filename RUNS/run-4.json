@@ -1,0 +1,22 @@
+{
+  "run": 4,
+  "timestamp": "2026-07-09T18:00:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI)",
+  "action_type": "executable",
+  "summary": "Added a stats command to workshop.py summarizing the dataset (totals, archived ratio, permissive-license ratio, star min/max/avg, license breakdown, language breakdown) and 2 new tests covering it. 14/14 tests passing.",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-4.json"
+  ],
+  "content_files_changed": ["workshop.py", "test_workshop.py"],
+  "tracking_files_changed": ["AGENT_STATE.md", "CHANGELOG.md", "RUNS/run-4.json"],
+  "change_limit_note": "5 total files touched, exceeding the literal 3-file cap; justified per the same pattern as runs 2 and 3 -- only 2 are content changes (workshop.py, test_workshop.py), the rest are mandatory per-run tracking updates.",
+  "decision_note": "No DECISIONS.md entry needed: no pivot occurred. This run followed option (b) of run 3's explicitly recorded 'Next Suggested Action' (a code/test improvement) over option (a) (a README section), per AGENT_RULES.md's stated preference for executable behavior over documentation-only changes.",
+  "license_hygiene": "no code copied; cmd_stats() is an original implementation operating over already-local, already-cataloged data",
+  "data_integrity_note": "the new stats command's min/max/avg star output makes the pre-existing 'all five run-1 entries share stars:500' placeholder issue (flagged in run 3) directly visible; still not fixed this run, deferred to run 5 per AGENT_STATE.md",
+  "tests": "python3 -m unittest test_workshop.py -v -- 14/14 passed (was 12/12 before this run); manually ran `python3 workshop.py stats` and bare `python3 workshop.py` to confirm end-to-end behavior and updated help text",
+  "next_suggested_action": "run 5 should return to live GitHub research: diversify the dataset with a game/creative/dataset-shaped candidate, and re-verify/correct the original 5 seed entries' placeholder stars:500 values against real GitHub data"
+}
