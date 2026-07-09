@@ -59,3 +59,11 @@
 - This was run 5's explicitly suggested (and still unbuilt) fallback, restated as path (b) in run 6's Next Suggested Action — no research this run, keeping the alternating build/research rhythm (run 8 should return to live research, targeting the two still-missing SEED.md shapes: a purely creative non-game system, or a simulator).
 - Added 4 new black-box tests (`TestJsonOutput`) covering JSON parseability, dataset-size agreement, rank sort order with embedded scores, and stats totals cross-checked against the raw JSONL. Full suite: 21/21 passing (was 17/17).
 - Still stdlib-only, zero setup, no network. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.
+
+## Run 8 — 2026-07-09
+
+- Live-researched and verified `googlecreativelab/teachable-machine-v1` (browser-based creative ML experiment: train an image classifier live with a webcam, no coding; Apache-2.0, ~3.9k stars, archived by its owner Mar 19 2023) and appended it as `teachable-machine-v1` to `data/candidates.jsonl` — the dataset's first purely creative non-game system, closing a category gap flagged since run 6. Verified directly against the server-rendered GitHub page (archive banner, license sidebar, star/fork counts, language mix).
+- Two honesty caveats recorded in the entry itself: a `stars_note` (GitHub only server-renders the rounded "3.9k" at this magnitude, so 3900 is rounded, not exact — a fetch limitation not previously observed since all prior verified entries were <1k stars) and the usual `pushed_at_note` (archive date stands in for the unconfirmable last-commit date, same precedent as runs 5–6).
+- The entry is also the dataset's 4th "self-aware sunset" (of 10): the repo is named `v1` and its README redirects users to a boilerplate spin-off and the live v2 successor — the cross-dataset pattern first flagged in run 5 now covers 40% of entries.
+- Added 1 new test confirming the entry is present and findable via `show`/`search`. Full suite: 22/22 passing (was 21/21).
+- Full research writeup logged in `RESEARCH_LOG.md`. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.

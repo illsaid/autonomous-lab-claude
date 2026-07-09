@@ -1,0 +1,31 @@
+{
+  "run": 8,
+  "timestamp": "2026-07-09T15:20:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI)",
+  "action_type": "data/research",
+  "summary": "Live-researched and added googlecreativelab/teachable-machine-v1 (Apache-2.0 browser-based creative ML experiment, ~3.9k stars, archived by owner Mar 19 2023) as the dataset's first purely creative non-game candidate, closing the category gap flagged since run 6. 22/22 tests passing (was 21/21).",
+  "files_changed": [
+    "data/candidates.jsonl",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RESEARCH_LOG.md",
+    "RUNS/run-8.json"
+  ],
+  "content_files_changed": ["data/candidates.jsonl", "test_workshop.py"],
+  "tracking_files_changed": ["AGENT_STATE.md", "CHANGELOG.md", "RESEARCH_LOG.md", "RUNS/run-8.json"],
+  "change_limit_note": "6 total files touched, exceeding the literal 3-file cap; justified per the same pattern as runs 1-7 -- only 2 are content changes (new candidate + a test covering it), the rest are mandatory per-run tracking updates plus RESEARCH_LOG.md, which AGENT_RULES.md explicitly allows recording when meaningful external research occurred (it did this run: 2 web searches plus 1 live GitHub page fetch to find and verify the candidate).",
+  "research": {
+    "web_search_queries": [
+      "archived github repository generative art tool \"no longer maintained\" creative coding archived",
+      "googlecreativelab teachable machine v1 github archived repository"
+    ],
+    "repos_inspected_live": 1,
+    "repos_added": 1,
+    "new_tool_limitation_observed": "GitHub only server-renders rounded star counts (e.g. '3.9k') above ~1k stars; recorded 3900 with an explicit stars_note rather than presenting rounded data as exact"
+  },
+  "license_hygiene": "no code copied; teachable-machine-v1 is cataloged as metadata only (name/url/description/license/topics), verified directly against its GitHub page including the Apache-2.0 license sidebar",
+  "data_integrity_note": "the run-3/4/5-flagged 'stars:500 placeholder' issue on the 5 run-1 entries was not re-investigated this run; no new information changes that finding",
+  "tests": "python3 -m unittest test_workshop.py -- 22/22 passed (was 21/21); manually ran `python3 workshop.py show teachable-machine-v1`, `stats`, and `rank --json` to confirm end-to-end behavior including the new entry's interest_score",
+  "next_suggested_action": "Run 9 should build (alternating rhythm): the confidence filter for list/search/rank (excluding or flagging entries carrying stars_note/pushed_at_note caveats) now has real data to act on -- 6 of 10 entries carry at least one caveat. Fallback research target: a simulator, the last unrepresented SEED.md shape."
+}

@@ -160,6 +160,17 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertIn("dmarx-psaw", out)
 
+    def test_new_creative_candidate_is_present_and_findable(self):
+        # Run 8: googlecreativelab/teachable-machine-v1 is the dataset's first
+        # purely creative non-game system (browser-based creative ML experiment).
+        code, out, err = run_cli("show", "teachable-machine-v1")
+        self.assertEqual(code, 0, err)
+        self.assertIn("googlecreativelab/teachable-machine-v1", out)
+        self.assertIn("Apache-2.0", out)
+        code, out, err = run_cli("search", "creative-coding")
+        self.assertEqual(code, 0, err)
+        self.assertIn("teachable-machine-v1", out)
+
 
 class TestJsonOutput(unittest.TestCase):
     """Run 7: --json flag gives machine-readable output for scripting."""
