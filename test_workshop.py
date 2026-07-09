@@ -161,5 +161,41 @@ class TestCLI(unittest.TestCase):
         self.assertIn("dmarx-psaw", out)
 
 
+class TestJsonOutput(unittest.TestCase):
+    """Run 7: --json flag gives machine-readable output for scripting."""
+
+    def test_list_json_parses_and_matches_dataset_size(self):
+        with DATA.open() as f:
+            expected = len([line for line in f if line.strip()])
+        code, out, err = run_cli("list", "--json")
+        self.assertEqual(code, 0, err)
+        items = json.loads(out)
+        self.assertIsInstance(items, list)
+        self.assertEqual(len(items), expected)
+
+    def test_rank_json_includes_score_and_is_sorted_desc(self):
+        code, out, err = run_cli("rank", "--json")
+        self.assertEqual(code, 0, err)
+        items = json.loads(out)
+        scores = [i["interest_score"] for i in items]
+        self.assertEqual(scores, sorted(scores, reverse=True))
+
+    def test_show_json_roundtrips_single_item(self):
+        code, out, err = run_cli("show", "dmarx-psaw", "--json")
+        self.assertEqual(code, 0, err)
+        item = json.loads(out)
+        self.assertEqual(item["id"], "dmarx-psaw")
+        self.assertEqual(item["license"], "BSD-2-Clause")
+
+    def test_stats_json_totals_match_dataset(self):
+        with DATA.open() as f:
+            expected = len([line for line in f if line.strip()])
+        code, out, err = run_cli("stats", "--json")
+        self.assertEqual(code, 0, err)
+        stats = json.loads(out)
+        self.assertEqual(stats["total"], expected)
+        self.assertEqual(sum(stats["by_license"].values()), expected)
+
+
 if __name__ == "__main__":
     unittest.main()

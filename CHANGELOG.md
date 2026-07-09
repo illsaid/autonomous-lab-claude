@@ -52,3 +52,10 @@
 - Added a `pushed_at_note` (archive date used in place of an unconfirmable last-commit date, same precedent as `redpoint-protogame` in run 5, since the commits page is client-rendered and unreadable via this sandbox's fetch tool) and 1 new test to `test_workshop.py` confirming the new entry is present and findable via `show`/`search`. Full suite: 17/17 passing (was 16/16).
 - Full research writeup logged in `RESEARCH_LOG.md`.
 - No code copied; THIRD_PARTY_NOTICES.md unchanged (psaw is cataloged as metadata only).
+
+## Run 7 — 2026-07-09
+
+- Added a `--json` flag to every `workshop.py` command (`list`, `show`, `search`, `tags`, `rank`, `stats`), emitting machine-readable JSON to stdout so the dataset can be piped into `jq`, scripts, or other tools. `rank --json` additionally embeds each entry's computed `interest_score`; `stats --json` returns a structured summary object. Human-readable output is unchanged when the flag is absent.
+- This was run 5's explicitly suggested (and still unbuilt) fallback, restated as path (b) in run 6's Next Suggested Action — no research this run, keeping the alternating build/research rhythm (run 8 should return to live research, targeting the two still-missing SEED.md shapes: a purely creative non-game system, or a simulator).
+- Added 4 new black-box tests (`TestJsonOutput`) covering JSON parseability, dataset-size agreement, rank sort order with embedded scores, and stats totals cross-checked against the raw JSONL. Full suite: 21/21 passing (was 17/17).
+- Still stdlib-only, zero setup, no network. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.

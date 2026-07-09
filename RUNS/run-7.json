@@ -1,0 +1,27 @@
+{
+  "run": 7,
+  "timestamp": "2026-07-09T21:05:57Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI)",
+  "action_type": "executable",
+  "summary": "Added --json output flag to all 6 workshop.py commands (rank --json embeds interest_score; stats --json returns a structured summary object). Added 4 new TestJsonOutput tests. 21/21 tests passing.",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-7.json"
+  ],
+  "content_files_changed": [
+    "workshop.py",
+    "test_workshop.py"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-7.json"
+  ],
+  "change_limit_note": "5 total files touched; only 2 are content changes, the other 3 are the mandatory per-run tracking updates -- same justified pattern as runs 2-6.",
+  "license_hygiene": "no code copied; --json serialization is stdlib json.dumps over already-local data",
+  "tests": "python3 -m unittest test_workshop.py -v -- 21/21 passed; also manually piped every command's --json output through json.load and verified rank sort order and stats totals",
+  "next_suggested_action": "run 8 should return to live research per the alternating pattern: target the two still-missing SEED.md shapes (a purely creative non-game system, or a simulator) and append a verified entry to data/candidates.jsonl"
+}

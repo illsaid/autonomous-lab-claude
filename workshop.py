@@ -15,6 +15,9 @@ Usage:
     python3 workshop.py tags
     python3 workshop.py rank
     python3 workshop.py stats
+
+Any command also accepts a --json flag for machine-readable output, e.g.:
+    python3 workshop.py rank --json
 """
 import json
 import sys
@@ -49,7 +52,10 @@ def fmt_row(item):
     return f"{item['id']:<32} ★{str(stars):<6} {str(lang):<10} {item['name']}"
 
 
-def cmd_list(items, args):
+def cmd_list(items, args, as_json=False):
+    if as_json:
+        print(json.dumps(items, indent=2))
+        return
     if not items:
         print("(no candidates yet)")
         return
@@ -58,13 +64,16 @@ def cmd_list(items, args):
     print(f"\n{len(items)} candidate(s). Use 'show <id>' for details.")
 
 
-def cmd_show(items, args):
+def cmd_show(items, args, as_json=False):
     if not args:
         print("usage: workshop.py show <id>", file=sys.stderr)
         sys.exit(2)
     target = args[0]
     for item in items:
         if item["id"] == target:
+            if as_json:
+                print(json.dumps(item, indent=2))
+                return
             for key in ["id", "name", "url", "description", "stars", "stars_note",
                         "language", "license", "archived", "pushed_at",
                         "pushed_at_note", "topics", "why", "source", "captured"]:
@@ -75,7 +84,7 @@ def cmd_show(items, args):
     sys.exit(1)
 
 
-def cmd_search(items, args):
+def cmd_search(items, args, as_json=False):
     if not args:
         print("usage: workshop.py search <keyword>", file=sys.stderr)
         sys.exit(2)
@@ -87,6 +96,9 @@ def cmd_search(items, args):
         haystack += " " + " ".join(item.get("topics", []))
         if keyword in haystack.lower():
             hits.append(item)
+    if as_json:
+        print(json.dumps(hits, indent=2))
+        return
     if not hits:
         print(f"no matches for '{keyword}'")
         return
@@ -95,11 +107,14 @@ def cmd_search(items, args):
     print(f"\n{len(hits)} match(es) for '{keyword}'.")
 
 
-def cmd_tags(items, args):
+def cmd_tags(items, args, as_json=False):
     counts = {}
     for item in items:
         for tag in item.get("topics", []):
             counts[tag] = counts.get(tag, 0) + 1
+    if as_json:
+        print(json.dumps(dict(sorted(counts.items(), key=lambda kv: -kv[1])), indent=2))
+        return
     if not counts:
         print("(no topics recorded)")
         return
@@ -140,11 +155,18 @@ def interest_score(item):
     return round(star_score + age_score + license_score + topic_score, 2)
 
 
-def cmd_rank(items, args):
+def cmd_rank(items, args, as_json=False):
     if not items:
-        print("(no candidates yet)")
+        if as_json:
+            print("[]")
+        else:
+            print("(no candidates yet)")
         return
     ranked = sorted(items, key=interest_score, reverse=True)
+    if as_json:
+        out = [dict(item, interest_score=interest_score(item)) for item in ranked]
+        print(json.dumps(out, indent=2))
+        return
     for item in ranked:
         score = interest_score(item)
         print(f"{score:>6.2f}  {fmt_row(item)}")
@@ -153,24 +175,19 @@ def cmd_rank(items, args):
 
 
 
-def cmd_stats(items, args):
+def cmd_stats(items, args, as_json=False):
     """Summarize the dataset: totals, archived ratio, license mix, language mix, star range."""
     if not items:
-        print("(no candidates yet)")
+        if as_json:
+            print("{}")
+        else:
+            print("(no candidates yet)")
         return
     total = len(items)
-    print(f"Total candidates: {total}")
 
     archived = sum(1 for i in items if i.get("archived"))
-    print(f"Archived: {archived}/{total}")
-
     permissive = sum(1 for i in items if i.get("license") in PERMISSIVE_LICENSES)
-    print(f"Permissively licensed: {permissive}/{total}")
-
     stars = [i.get("stars") for i in items if isinstance(i.get("stars"), (int, float))]
-    if stars:
-        avg = sum(stars) / len(stars)
-        print(f"Stars: min={min(stars)} max={max(stars)} avg={avg:.1f}")
 
     def _breakdown(field):
         counts = {}
@@ -178,6 +195,30 @@ def cmd_stats(items, args):
             key = i.get(field) or "?"
             counts[key] = counts.get(key, 0) + 1
         return sorted(counts.items(), key=lambda kv: -kv[1])
+
+    if as_json:
+        payload = {
+            "total": total,
+            "archived": archived,
+            "permissively_licensed": permissive,
+            "by_license": dict(_breakdown("license")),
+            "by_language": dict(_breakdown("language")),
+        }
+        if stars:
+            payload["stars"] = {
+                "min": min(stars),
+                "max": max(stars),
+                "avg": round(sum(stars) / len(stars), 1),
+            }
+        print(json.dumps(payload, indent=2))
+        return
+
+    print(f"Total candidates: {total}")
+    print(f"Archived: {archived}/{total}")
+    print(f"Permissively licensed: {permissive}/{total}")
+    if stars:
+        avg = sum(stars) / len(stars)
+        print(f"Stars: min={min(stars)} max={max(stars)} avg={avg:.1f}")
 
     print("\nBy license:")
     for key, count in _breakdown("license"):
@@ -205,8 +246,11 @@ def main():
         sys.exit(0 if len(sys.argv) < 2 else 2)
     cmd = sys.argv[1]
     args = sys.argv[2:]
+    as_json = "--json" in args
+    if as_json:
+        args = [a for a in args if a != "--json"]
     items = load_candidates()
-    COMMANDS[cmd](items, args)
+    COMMANDS[cmd](items, args, as_json)
 
 
 if __name__ == "__main__":
