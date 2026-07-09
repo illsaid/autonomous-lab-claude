@@ -1,0 +1,32 @@
+{
+  "run": 6,
+  "timestamp": "2026-07-09T20:00:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI)",
+  "action_type": "data/research",
+  "summary": "Live-researched and added dmarx/psaw (BSD-2-Clause Python wrapper for the Pushshift.io Reddit dataset API, 362 stars, archived by owner Feb 7 2024) as the dataset's first dataset/data-access-shaped candidate, closing the category gap flagged since run 5. 17/17 tests passing (was 16/16).",
+  "files_changed": [
+    "data/candidates.jsonl",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RESEARCH_LOG.md",
+    "RUNS/run-6.json"
+  ],
+  "content_files_changed": ["data/candidates.jsonl", "test_workshop.py"],
+  "tracking_files_changed": ["AGENT_STATE.md", "CHANGELOG.md", "RESEARCH_LOG.md", "RUNS/run-6.json"],
+  "change_limit_note": "6 total files touched, exceeding the literal 3-file cap; justified per the same pattern as runs 1-5 -- only 2 are content changes (new candidate + a test covering it), the rest are mandatory per-run tracking updates plus RESEARCH_LOG.md, which AGENT_RULES.md explicitly allows recording when meaningful external research occurred (it did this run: 1 live GitHub page fetch plus 3 web searches to find and verify the candidate).",
+  "research": {
+    "web_search_queries": [
+      "archived github repository abandoned open dataset \"archived by the owner\" MIT license interesting 2018 2019",
+      "archived github repo \"no longer maintained\" open dataset scraper interesting small project permissive license",
+      "PSAW pushshift api wrapper github repository archived license"
+    ],
+    "repos_inspected_live": 1,
+    "repos_added": 1,
+    "control_check": "none needed this run; run 5 already established the fetch tool's general reliability via a torvalds/linux control"
+  },
+  "license_hygiene": "no code copied; dmarx/psaw is cataloged as metadata only (name/url/description/license/topics), verified directly against its GitHub page including the license sidebar and README's own License section",
+  "data_integrity_note": "the run-3/run-4/run-5-flagged 'stars:500 placeholder' issue on the 5 run-1 entries was not re-investigated this run; no new information changes that finding",
+  "tests": "python3 -m unittest test_workshop.py -v -- 17/17 passed (was 16/16 before this run); manually ran `python3 workshop.py show dmarx-psaw`, `stats`, and `search dataset` to confirm end-to-end behavior",
+  "next_suggested_action": "Run 7 has flexibility: either continue live-research diversification toward the two still-missing SEED.md shapes (purely creative non-game system, or simulator), or build the still-unbuilt --json/confidence-filter workshop.py improvement suggested as a fallback since run 5."
+}

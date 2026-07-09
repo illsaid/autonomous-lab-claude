@@ -149,6 +149,17 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertIn("redpoint-protogame", out)
 
+    def test_new_dataset_candidate_is_present_and_findable(self):
+        # Run 6: dmarx/psaw is the dataset's first dataset/data-access-shaped
+        # entry (a wrapper around the now-defunct Pushshift Reddit dataset).
+        code, out, err = run_cli("show", "dmarx-psaw")
+        self.assertEqual(code, 0, err)
+        self.assertIn("dmarx/psaw", out)
+        self.assertIn("BSD-2-Clause", out)
+        code, out, err = run_cli("search", "pushshift")
+        self.assertEqual(code, 0, err)
+        self.assertIn("dmarx-psaw", out)
+
 
 if __name__ == "__main__":
     unittest.main()

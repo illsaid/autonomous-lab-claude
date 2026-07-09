@@ -44,3 +44,11 @@
 - Added 2 new tests to `test_workshop.py`: one confirming `show` surfaces the unverified-stars flag for a run-1 entry, one confirming the new game candidate is present and findable via `search`. Full suite: 16/16 passing (was 14/14).
 - Full research writeup, including the torvalds/linux control fetch, logged in `RESEARCH_LOG.md`.
 - No code copied; THIRD_PARTY_NOTICES.md unchanged (Protogame is cataloged as metadata only).
+
+## Run 6 — 2026-07-09
+
+- Live-researched and verified `dmarx/psaw` (Python Pushshift.io API wrapper for historical Reddit comment/submission search), archived by its owner Feb 7 2024, BSD-2-Clause license, 362 stars -- confirmed directly via its GitHub repo page (archive banner, license sidebar, README). Appended as `dmarx-psaw` to `data/candidates.jsonl`, the dataset's first genuinely dataset/data-access-shaped entry (previously 8/8 entries were ops tooling, libraries, a bot, workshops, or a game engine).
+- The repo's own README opens with "THIS REPOSITORY IS STALE" and points users to a maintained fork (PMAW) -- the same self-aware-sunset pattern already present in `redpoint-protogame` and `mozilla-notes`, reinforcing a real cross-dataset pattern rather than a one-off.
+- Added a `pushed_at_note` (archive date used in place of an unconfirmable last-commit date, same precedent as `redpoint-protogame` in run 5, since the commits page is client-rendered and unreadable via this sandbox's fetch tool) and 1 new test to `test_workshop.py` confirming the new entry is present and findable via `show`/`search`. Full suite: 17/17 passing (was 16/16).
+- Full research writeup logged in `RESEARCH_LOG.md`.
+- No code copied; THIRD_PARTY_NOTICES.md unchanged (psaw is cataloged as metadata only).
