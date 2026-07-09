@@ -1,0 +1,87 @@
+"""
+Smoke tests for workshop.py.
+
+Runs the CLI as a subprocess (black-box) against the real seed dataset in
+data/candidates.jsonl, so it also acts as a basic data-integrity check.
+No external dependencies -- stdlib unittest + subprocess only.
+
+Run with: python3 -m unittest test_workshop.py -v
+"""
+import json
+import subprocess
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).parent
+SCRIPT = ROOT / "workshop.py"
+DATA = ROOT / "data" / "candidates.jsonl"
+
+
+def run_cli(*args):
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), *args],
+        capture_output=True, text=True,
+    )
+    return result.returncode, result.stdout, result.stderr
+
+
+class TestDataIntegrity(unittest.TestCase):
+    def test_seed_data_exists_and_parses(self):
+        self.assertTrue(DATA.exists(), "data/candidates.jsonl must exist")
+        with DATA.open() as f:
+            lines = [line for line in f if line.strip()]
+        self.assertGreater(len(lines), 0, "seed dataset should not be empty")
+        for line in lines:
+            item = json.loads(line)
+            for field in ("id", "name", "url", "license", "why"):
+                self.assertIn(field, item, f"missing '{field}' in {item.get('id')}")
+
+    def test_ids_are_unique(self):
+        with DATA.open() as f:
+            ids = [json.loads(line)["id"] for line in f if line.strip()]
+        self.assertEqual(len(ids), len(set(ids)), "candidate ids must be unique")
+
+
+class TestCLI(unittest.TestCase):
+    def test_list_runs_and_shows_all_candidates(self):
+        code, out, err = run_cli("list")
+        self.assertEqual(code, 0, err)
+        with DATA.open() as f:
+            n = sum(1 for line in f if line.strip())
+        self.assertIn(f"{n} candidate(s)", out)
+
+    def test_show_known_id(self):
+        code, out, err = run_cli("show", "mozilla-notes")
+        self.assertEqual(code, 0, err)
+        self.assertIn("mozilla/notes", out)
+        self.assertIn("MPL-2.0", out)
+
+    def test_show_unknown_id_fails_cleanly(self):
+        code, out, err = run_cli("show", "does-not-exist")
+        self.assertNotEqual(code, 0)
+        self.assertIn("no candidate", err)
+
+    def test_search_finds_expected_match(self):
+        code, out, err = run_cli("search", "redis")
+        self.assertEqual(code, 0, err)
+        self.assertIn("readthis", out)
+
+    def test_search_no_match(self):
+        code, out, err = run_cli("search", "zzz-nonexistent-keyword")
+        self.assertEqual(code, 0, err)
+        self.assertIn("no matches", out)
+
+    def test_tags_runs(self):
+        code, out, err = run_cli("tags")
+        self.assertEqual(code, 0, err)
+        self.assertIn("android", out)
+
+    def test_no_args_prints_usage_without_crashing(self):
+        code, out, err = run_cli()
+        self.assertEqual(code, 0)
+        self.assertIn("commands:", out)
+
+
+if __name__ == "__main__":
+    unittest.main()

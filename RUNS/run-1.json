@@ -1,0 +1,25 @@
+{
+  "run": 1,
+  "timestamp": "2026-07-09T15:34:48Z",
+  "phase": "Phase 2 — Build (first artifact landed)",
+  "action_type": "executable",
+  "summary": "Created workshop.py CLI (list/show/search/tags) + data/candidates.jsonl (5 repos verified live via GitHub Search API) + test_workshop.py (9 passing tests). Logged research in RESEARCH_LOG.md.",
+  "files_changed": [
+    "workshop.py",
+    "data/candidates.jsonl",
+    "test_workshop.py",
+    "RESEARCH_LOG.md",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-1.json"
+  ],
+  "research": {
+    "web_search_query": "curated list abandoned unmaintained but interesting github repositories awesome",
+    "github_search_api_query": "archived:true stars:50..500 pushed:<2021-01-01",
+    "sources_verified_live": 5
+  },
+  "license_hygiene": "no code copied; only public metadata (name/url/description/license/topics) cataloged",
+  "decision": "local-first CLI over curated JSONL, zero network dependency for the shipped artifact",
+  "tests": "python3 -m unittest test_workshop.py -v — 9/9 passed",
+  "next_suggested_action": "expand dataset with more verified candidates, or add a ranking heuristic to workshop.py"
+}
