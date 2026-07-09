@@ -18,3 +18,12 @@
 - Added a `rank` command to `workshop.py`: a deterministic `interest_score()` heuristic over local metadata (star-count sweet spot, age since last push, permissive-license bonus, topic richness) that surfaces the most "forgotten-but-interesting" candidates first.
 - Added 3 new tests to `test_workshop.py` covering the new command and heuristic (CLI output order matches a fresh score-sort; license bonus verified directly). Full suite: 12/12 passing.
 - No dataset changes this run; next run should expand `data/candidates.jsonl` with fresh, live-verified entries so ranking has more meaningful variance to work with.
+
+## Run 3 — 2026-07-09
+
+- Live-researched (web search + direct GitHub repo page fetches) and verified two new candidates, appending them to `data/candidates.jsonl`:
+  - `pagerduty-cronner` (PagerDuty/cronner) — cron/statsd ops CLI, BSD-3-Clause, 20 stars, archived 2018, handed off to a community fork.
+  - `cartodb-labs-postgresql` (CartoDB/labs-postgresql) — CommitConf 2018 PostgreSQL/PostGIS workshop, 24 stars, no license file (cataloged as metadata only), self-archived, last updated 2019-01-17.
+- Verified both against the actual GitHub UI (stars, license, archive status, dates) rather than trusting search snippets. Full test suite still 12/12 passing; manually confirmed `rank` and `show` render both new entries correctly.
+- Noted a data-integrity concern for a future run: all 5 run-1 seed entries share an identical `"stars": 500` value, which looks like a placeholder rather than real distinct counts — flagged in `AGENT_STATE.md`, not fixed this run to keep the change small and focused.
+- No code copied; THIRD_PARTY_NOTICES.md unchanged.
