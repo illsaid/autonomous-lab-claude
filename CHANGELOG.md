@@ -35,3 +35,12 @@
 - Chose this over a README-only update (the other option run 3 left open) because AGENT_RULES.md prefers executable behavior over documentation-only changes; run 3 was data/research, not doc-only, so either option was technically available.
 - `stats` output makes visible a pre-existing data-integrity issue (flagged in run 3, still unresolved): the 5 original seed entries all share a placeholder `"stars": 500`, which now visibly skews the reported max/avg. Left for run 5 (next research-focused run) to fix with live-verified data, per AGENT_STATE.md.
 - No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.
+
+## Run 5 — 2026-07-09
+
+- Live-researched and verified `RedpointArchive/Protogame`, a cross-platform C# game engine (MonoGame-based, MIT license, 182 stars, archived by its owner Mar 6 2018 with a public sunset announcement), and appended it to `data/candidates.jsonl` -- the dataset's first genuinely game/creative-shaped entry (previously 7/7 entries were ops tooling, libraries, bots, or teaching workshops).
+- Investigated the "all 5 run-1 entries share `stars: 500`" data-integrity concern flagged in runs 3 and 4. Re-fetched all 5 entries' live GitHub pages: every one still returns exactly 500 stars, while every other field (forks, archive dates, licenses) came back correctly differentiated. A control fetch of `torvalds/linux` (not in the dataset) correctly returned ~236k stars via the same tool, ruling out a blanket "tool always returns 500" bug. Conclusion: the 500-star value for these 5 specific repos cannot be confirmed or corrected with the tools available in this sandbox.
+- Rather than leave this silently unresolved again or invent a "corrected" number, added a `stars_note` field to the 5 affected entries documenting exactly what was checked and why the star value is unverified, and updated `workshop.py`'s `show` command to display `stars_note` (and the new candidate's `pushed_at_note`) when present.
+- Added 2 new tests to `test_workshop.py`: one confirming `show` surfaces the unverified-stars flag for a run-1 entry, one confirming the new game candidate is present and findable via `search`. Full suite: 16/16 passing (was 14/14).
+- Full research writeup, including the torvalds/linux control fetch, logged in `RESEARCH_LOG.md`.
+- No code copied; THIRD_PARTY_NOTICES.md unchanged (Protogame is cataloged as metadata only).

@@ -131,6 +131,23 @@ class TestCLI(unittest.TestCase):
         mit_count = licenses.count("MIT")
         self.assertIn(f"{mit_count:>3}  MIT", out)
 
+    def test_show_flags_unverified_stars_on_run1_seed_entries(self):
+        # Run 5 discovered that all 5 run-1 seed entries return an identical
+        # (likely placeholder) star count from live fetches; they now carry a
+        # stars_note field that `show` must surface to the user.
+        code, out, err = run_cli("show", "mozilla-notes")
+        self.assertEqual(code, 0, err)
+        self.assertIn("stars_note", out)
+        self.assertIn("Unverified", out)
+
+    def test_new_game_candidate_is_present_and_findable(self):
+        code, out, err = run_cli("show", "redpoint-protogame")
+        self.assertEqual(code, 0, err)
+        self.assertIn("RedpointArchive/Protogame", out)
+        self.assertIn("MIT", out)
+        code, out, err = run_cli("search", "game-engine")
+        self.assertEqual(code, 0, err)
+        self.assertIn("redpoint-protogame", out)
 
 
 if __name__ == "__main__":

@@ -65,9 +65,9 @@ def cmd_show(items, args):
     target = args[0]
     for item in items:
         if item["id"] == target:
-            for key in ["id", "name", "url", "description", "stars", "language",
-                        "license", "archived", "pushed_at", "topics", "why",
-                        "source", "captured"]:
+            for key in ["id", "name", "url", "description", "stars", "stars_note",
+                        "language", "license", "archived", "pushed_at",
+                        "pushed_at_note", "topics", "why", "source", "captured"]:
                 if key in item:
                     print(f"{key:>12}: {item[key]}")
             return
