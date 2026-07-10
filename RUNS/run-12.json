@@ -1,0 +1,30 @@
+{
+  "run": 12,
+  "timestamp": "2026-07-09T19:30:00Z",
+  "phase": "Phase 3 - Synthesis (making observed patterns queryable)",
+  "action_type": "build",
+  "summary": "Made the self-aware-sunset pattern queryable: added evidence-backed 'sunset' objects (successor + evidence sourced from RESEARCH_LOG writeups) to 6 dataset entries, a 'sunsets' CLI command (human + --json, --verified-only respected), a sunset census in stats (both modes), and readable sunset rendering in show. Corrected the sunset census 5->6 (pagerduty-cronner qualifies per run 3's writeup). Added 6 black-box tests (TestSunsets); 38/38 passing (was 32/32). This was run 11's explicitly suggested action.",
+  "files_changed": [
+    "data/candidates.jsonl",
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-12.json"
+  ],
+  "content_files_changed": [
+    "data/candidates.jsonl",
+    "workshop.py",
+    "test_workshop.py"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-12.json"
+  ],
+  "change_limit_note": "6 total files touched, exceeding the literal 3-file cap; same recorded justification as runs 1-11: only 3 are content changes forming one atomic feature (a sunsets command needs the sunset field to query), the rest are the per-run tracking updates AGENT_RULES.md itself mandates.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "Sunset census corrected 5->6 (pagerduty-cronner overlooked in the informal count; evidence in run 3 writeup). All 6 sunset objects carry an evidence string traceable to a RESEARCH_LOG writeup, enforced by a new test. Caveat census unchanged (9/11). stars:500 issue still unresolved.",
+  "tests": "python3 -m unittest test_workshop -- 38/38 passed (was 32/32); manually verified sunsets (human/--json/--verified-only), stats census in both modes, and show rendering of the nested sunset object",
+  "next_suggested_action": "Run 13 should write ANALYSIS.md, the doc-side companion: distill the finding that 6 of 11 curated 'forgotten' repos were deliberately retired (4 with successors), citing entry ids and CLI commands so every claim is checkable. Documentation run permitted (run 12 was executable) and plausibly qualifies as final-report preparation."
+}

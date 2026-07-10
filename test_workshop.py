@@ -326,5 +326,63 @@ class TestCaveatsInJson(unittest.TestCase):
         self.assertIn(f"Caveated (any *_note): {expected}/{len(raw)}", out)
 
 
+class TestSunsets(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        with DATA.open() as f:
+            cls.raw = [json.loads(line) for line in f if line.strip()]
+        cls.sunset_ids = {i["id"] for i in cls.raw if isinstance(i.get("sunset"), dict)}
+
+    def test_sunset_data_carries_evidence(self):
+        # Every sunset object must record its evidence string (honesty rule:
+        # the claim of a deliberate retirement must be traceable).
+        for item in self.raw:
+            if isinstance(item.get("sunset"), dict):
+                self.assertIn("evidence", item["sunset"], item["id"])
+                self.assertTrue(item["sunset"]["evidence"].strip(), item["id"])
+
+    def test_sunsets_command_matches_raw_data(self):
+        code, out, err = run_cli("sunsets")
+        self.assertEqual(code, 0, err)
+        for sid in self.sunset_ids:
+            self.assertIn(sid, out)
+        self.assertIn(f"{len(self.sunset_ids)} of {len(self.raw)} candidate(s)", out)
+        # Entries without a sunset object must not be listed.
+        for item in self.raw:
+            if item["id"] not in self.sunset_ids:
+                self.assertNotIn(item["id"], out)
+
+    def test_sunsets_json_ids_and_caveats(self):
+        code, out, err = run_cli("sunsets", "--json")
+        self.assertEqual(code, 0, err)
+        data = json.loads(out)
+        self.assertEqual({i["id"] for i in data}, self.sunset_ids)
+        for entry in data:
+            self.assertIn("caveats", entry)
+            self.assertIn("evidence", entry["sunset"])
+
+    def test_show_renders_sunset_successor(self):
+        code, out, err = run_cli("show", "azure-device-simulation")
+        self.assertEqual(code, 0, err)
+        self.assertIn("self-aware sunset", out)
+        self.assertIn("azure-iot-pcs-device-simulation", out)
+
+    def test_stats_reports_sunset_census_in_both_outputs(self):
+        expected = len(self.sunset_ids)
+        code, out, err = run_cli("stats", "--json")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(json.loads(out)["self_aware_sunsets"], expected)
+        code, out, err = run_cli("stats")
+        self.assertEqual(code, 0, err)
+        self.assertIn(f"Self-aware sunsets: {expected}/{len(self.raw)}", out)
+
+    def test_sunsets_respects_verified_only(self):
+        code, out, err = run_cli("sunsets", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        for entry in json.loads(out):
+            self.assertEqual(entry["caveats"], [])
+            self.assertIn(entry["id"], self.sunset_ids)
+
+
 if __name__ == "__main__":
     unittest.main()

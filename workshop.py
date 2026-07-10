@@ -15,6 +15,7 @@ Usage:
     python3 workshop.py tags
     python3 workshop.py rank
     python3 workshop.py stats
+    python3 workshop.py sunsets
 
 Any command also accepts a --json flag for machine-readable output, e.g.:
     python3 workshop.py rank --json
@@ -113,6 +114,11 @@ def cmd_show(items, args, as_json=False):
                         "pushed_at_note", "topics", "why", "source", "captured"]:
                 if key in item:
                     print(f"{key:>12}: {item[key]}")
+            if "sunset" in item:
+                print(f"{'sunset':>12}: self-aware sunset")
+                for sub in ("successor", "evidence"):
+                    if sub in item["sunset"]:
+                        print(f"{sub:>12}:   {item['sunset'][sub]}")
             return
     print(f"no candidate with id '{target}'", file=sys.stderr)
     sys.exit(1)
@@ -209,6 +215,31 @@ def cmd_rank(items, args, as_json=False):
 
 
 
+def cmd_sunsets(items, args, as_json=False):
+    """List the "self-aware sunset" entries: repos whose maintainers explicitly
+    retired them (deprecation notice, archive announcement, or handoff),
+    rather than letting them silently rot. Where the retirement pointed at a
+    successor (fork, v2, replacement repo), it is shown.
+
+    The pattern was first observed in run 5 and recurred as the dataset grew;
+    the underlying evidence lives in each entry's 'sunset' object, sourced
+    from the per-run research writeups in RESEARCH_LOG.md.
+    """
+    hits = [i for i in items if isinstance(i.get("sunset"), dict)]
+    if as_json:
+        print(json.dumps([with_caveats(i) for i in hits], indent=2))
+        return
+    if not hits:
+        print("(no self-aware sunset entries in the current view)")
+        return
+    for item in hits:
+        print(fmt_row(item))
+        successor = item["sunset"].get("successor")
+        print(f"        successor: {successor if successor else '(none recorded)'}")
+    print(f"\n{len(hits)} of {len(items)} candidate(s) are self-aware sunsets "
+          f"(explicitly retired by their maintainers). Use 'show <id>' for the evidence.")
+
+
 def cmd_stats(items, args, as_json=False):
     """Summarize the dataset: totals, archived ratio, license mix, language mix, star range."""
     if not items:
@@ -222,6 +253,7 @@ def cmd_stats(items, args, as_json=False):
     archived = sum(1 for i in items if i.get("archived"))
     permissive = sum(1 for i in items if i.get("license") in PERMISSIVE_LICENSES)
     caveated = sum(1 for i in items if data_caveats(i))
+    sunsets = sum(1 for i in items if isinstance(i.get("sunset"), dict))
     stars = [i.get("stars") for i in items if isinstance(i.get("stars"), (int, float))]
 
     def _breakdown(field):
@@ -237,6 +269,7 @@ def cmd_stats(items, args, as_json=False):
             "archived": archived,
             "permissively_licensed": permissive,
             "caveated": caveated,
+            "self_aware_sunsets": sunsets,
             "by_license": dict(_breakdown("license")),
             "by_language": dict(_breakdown("language")),
         }
@@ -253,6 +286,7 @@ def cmd_stats(items, args, as_json=False):
     print(f"Archived: {archived}/{total}")
     print(f"Permissively licensed: {permissive}/{total}")
     print(f"Caveated (any *_note): {caveated}/{total}")
+    print(f"Self-aware sunsets: {sunsets}/{total}")
     if stars:
         avg = sum(stars) / len(stars)
         print(f"Stars: min={min(stars)} max={max(stars)} avg={avg:.1f}")
@@ -273,6 +307,7 @@ COMMANDS = {
     "tags": cmd_tags,
     "rank": cmd_rank,
     "stats": cmd_stats,
+    "sunsets": cmd_sunsets,
 }
 
 
