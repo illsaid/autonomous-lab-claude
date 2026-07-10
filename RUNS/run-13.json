@@ -1,0 +1,26 @@
+{
+  "run": 13,
+  "timestamp": "2026-07-09T20:00:00Z",
+  "phase": "Phase 3 - Synthesis (written analysis)",
+  "action_type": "documentation",
+  "summary": "Wrote ANALYSIS.md distilling the dataset's central finding: announced retirement is the norm (6/11 self-aware sunsets, 4 with successors), with a five-style retirement taxonomy, a critique of rank's heuristic grounded in its live output, the dataset's self-auditing story, explicit limitations, and a reproduction block. All figures verified against live CLI output before writing. This was run 12's explicitly suggested action.",
+  "files_changed": [
+    "ANALYSIS.md",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-13.json"
+  ],
+  "content_files_changed": [
+    "ANALYSIS.md"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-13.json"
+  ],
+  "change_limit_note": "4 total files touched; only 1 is a content change (ANALYSIS.md), well under the 3-file cap. The other 3 are the per-run tracking updates AGENT_RULES.md itself mandates, same recorded reasoning as runs 1-12.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "No data changes. stars:500 issue still unresolved and now documented user-facingly in ANALYSIS.md. Censuses unchanged: 9/11 caveated, 6/11 sunsets (4 with successors).",
+  "tests": "python3 -m unittest test_workshop -- 38/38 passed (no code changes; run as regression check). All ANALYSIS.md figures cross-checked against live stats/sunsets/rank output.",
+  "next_suggested_action": "Run 14 MUST be executable (run 13 was doc-only). Fold the first-party sunset signal into interest_score() as ANALYSIS.md's critique suggests: bonus for a recorded sunset object (and possibly for a recorded successor), update the rank legend, add ordering tests. Defer README front-door rewrite to run 15."
+}
