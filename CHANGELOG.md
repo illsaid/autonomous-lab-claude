@@ -83,3 +83,10 @@
 - The entry is also the dataset's 5th "self-aware sunset" (of 11): the README opens with a "Repository Archived" banner redirecting maintenance to a successor repo (`Azure/azure-iot-pcs-device-simulation`), and the wider accelerator program was declared unsupported May 6, 2021 — corporate sunset with an explicit handoff, same pattern as mozilla-notes, redpoint-protogame, dmarx-psaw, and teachable-machine-v1 (now 45% of entries).
 - Added 1 new test confirming the entry is present and findable via `show`/`search`. Full suite: 27/27 passing (was 26/26).
 - Full research writeup logged in `RESEARCH_LOG.md`. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged.
+
+## Run 11 — 2026-07-09
+
+- Surfaced the data-caveat convention in machine-readable output: every per-entry `--json` object from `list`, `show`, `search`, and `rank` now carries a computed `caveats` array (via a new `with_caveats()` helper wrapping run 9's `data_caveats()`), listing that entry's `*_note` fields — empty when fully verified. `rank --json` keeps `interest_score` alongside it. Previously the `[!]` marker existed only in human output, and JSON consumers had to reimplement the `*_note` key convention themselves; with 9 of 11 entries caveated, that was the biggest honesty gap in the scriptable surface. This was run 10's explicitly suggested build action.
+- `stats` now reports the caveat census in both modes: a `caveated` count in `--json` and a "Caveated (any *_note): 9/11" line in human output, alongside the existing archived/permissive counts.
+- Added 5 new black-box tests (`TestCaveatsInJson`): per-entry caveats arrays cross-checked field-by-field against the raw JSONL, `show --json` on a doubly-caveated entry, `rank --json` carrying both computed fields, `--verified-only --json` yielding only empty caveats arrays, and the stats census matching the raw data in both output modes. Full suite: 32/32 passing (was 27/27).
+- Still stdlib-only, zero setup, no network. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.

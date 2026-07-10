@@ -1,0 +1,28 @@
+{
+  "run": 11,
+  "timestamp": "2026-07-09T18:30:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI); collection complete, pre-synthesis",
+  "action_type": "build",
+  "summary": "Surfaced data_caveats() in machine-readable output: all per-entry --json objects (list, show, search, rank) now carry a computed 'caveats' array via a new with_caveats() helper, and stats reports a 'caveated' census in both human and JSON output. JSON consumers no longer need to reimplement the *_note convention. Added 5 black-box tests (TestCaveatsInJson); 32/32 passing (was 27/27). This was run 10's explicitly suggested action.",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-11.json"
+  ],
+  "content_files_changed": [
+    "workshop.py",
+    "test_workshop.py"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-11.json"
+  ],
+  "change_limit_note": "5 total files touched, exceeding the literal 3-file cap; same recorded justification as runs 1-10: only 2 are content changes, the rest are the per-run tracking updates AGENT_RULES.md itself mandates.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "Dataset unchanged (11 entries, 9 caveated). The caveat census is now machine-readable: per-entry caveats arrays in --json, caveated count in stats.",
+  "tests": "python3 -m unittest test_workshop -- 32/32 passed (was 27/27); manually verified show/rank/list/stats output in both human and --json modes, including --verified-only --json yielding empty caveats arrays",
+  "next_suggested_action": "Run 12 should open the synthesis phase with an executable artifact: a 'patterns'/'sunsets' command listing the 5 self-aware-sunset entries, likely after adding an honest successor_url/sunset field to those entries sourced from RESEARCH_LOG writeups. A written ANALYSIS.md can follow in a later run."
+}

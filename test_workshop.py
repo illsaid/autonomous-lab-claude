@@ -274,5 +274,57 @@ class TestVerifiedOnly(unittest.TestCase):
                              f"{item['id']} carries a caveat but matched under --verified-only")
 
 
+class TestCaveatsInJson(unittest.TestCase):
+    """The computed 'caveats' array in --json output (run 11)."""
+
+    @staticmethod
+    def _raw_by_id():
+        with DATA.open() as f:
+            return {json.loads(line)["id"]: json.loads(line)
+                    for line in f if line.strip()}
+
+    def test_list_json_caveats_match_raw_note_fields(self):
+        code, out, err = run_cli("list", "--json")
+        self.assertEqual(code, 0, err)
+        raw = self._raw_by_id()
+        for entry in json.loads(out):
+            expected = sorted(k for k in raw[entry["id"]] if k.endswith("_note"))
+            self.assertEqual(entry["caveats"], expected, entry["id"])
+
+    def test_show_json_includes_caveats_array(self):
+        code, out, err = run_cli("show", "teachable-machine-v1", "--json")
+        self.assertEqual(code, 0, err)
+        entry = json.loads(out)
+        self.assertIn("stars_note", entry["caveats"])
+        self.assertIn("pushed_at_note", entry["caveats"])
+
+    def test_rank_json_carries_both_caveats_and_score(self):
+        code, out, err = run_cli("rank", "--json")
+        self.assertEqual(code, 0, err)
+        for entry in json.loads(out):
+            self.assertIn("caveats", entry)
+            self.assertIn("interest_score", entry)
+
+    def test_verified_only_json_entries_have_empty_caveats(self):
+        code, out, err = run_cli("list", "--verified-only", "--json")
+        self.assertEqual(code, 0, err)
+        entries = json.loads(out)
+        self.assertGreater(len(entries), 0)
+        for entry in entries:
+            self.assertEqual(entry["caveats"], [], entry["id"])
+
+    def test_stats_reports_caveated_count_in_both_outputs(self):
+        with DATA.open() as f:
+            raw = [json.loads(line) for line in f if line.strip()]
+        expected = sum(1 for i in raw
+                       if any(k.endswith("_note") for k in i))
+        code, out, err = run_cli("stats", "--json")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(json.loads(out)["caveated"], expected)
+        code, out, err = run_cli("stats")
+        self.assertEqual(code, 0, err)
+        self.assertIn(f"Caveated (any *_note): {expected}/{len(raw)}", out)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -24,6 +24,10 @@ carrying data-quality caveats (any '*_note' field, e.g. stars_note or
 pushed_at_note) before the command runs:
     python3 workshop.py rank --verified-only
     python3 workshop.py list --verified-only --json
+
+In --json output, every per-entry object additionally carries a computed
+'caveats' array naming that entry's data-quality caveat fields (empty when
+the entry is fully verified), mirroring the [!] marker in human output.
 """
 import json
 import sys
@@ -62,6 +66,16 @@ def data_caveats(item):
     return sorted(k for k in item if k.endswith("_note"))
 
 
+def with_caveats(item):
+    """Copy of item with a computed 'caveats' array for JSON consumers.
+
+    Human output already flags caveated rows with [!]; this surfaces the
+    same data_caveats() result in machine-readable output so scripts do
+    not have to reimplement the '*_note' key convention themselves.
+    """
+    return dict(item, caveats=data_caveats(item))
+
+
 def fmt_row(item):
     stars = item.get("stars", "?")
     lang = item.get("language", "?")
@@ -71,7 +85,7 @@ def fmt_row(item):
 
 def cmd_list(items, args, as_json=False):
     if as_json:
-        print(json.dumps(items, indent=2))
+        print(json.dumps([with_caveats(i) for i in items], indent=2))
         return
     if not items:
         print("(no candidates yet)")
@@ -92,7 +106,7 @@ def cmd_show(items, args, as_json=False):
     for item in items:
         if item["id"] == target:
             if as_json:
-                print(json.dumps(item, indent=2))
+                print(json.dumps(with_caveats(item), indent=2))
                 return
             for key in ["id", "name", "url", "description", "stars", "stars_note",
                         "language", "license", "archived", "pushed_at",
@@ -117,7 +131,7 @@ def cmd_search(items, args, as_json=False):
         if keyword in haystack.lower():
             hits.append(item)
     if as_json:
-        print(json.dumps(hits, indent=2))
+        print(json.dumps([with_caveats(i) for i in hits], indent=2))
         return
     if not hits:
         print(f"no matches for '{keyword}'")
@@ -184,7 +198,7 @@ def cmd_rank(items, args, as_json=False):
         return
     ranked = sorted(items, key=interest_score, reverse=True)
     if as_json:
-        out = [dict(item, interest_score=interest_score(item)) for item in ranked]
+        out = [dict(with_caveats(item), interest_score=interest_score(item)) for item in ranked]
         print(json.dumps(out, indent=2))
         return
     for item in ranked:
@@ -207,6 +221,7 @@ def cmd_stats(items, args, as_json=False):
 
     archived = sum(1 for i in items if i.get("archived"))
     permissive = sum(1 for i in items if i.get("license") in PERMISSIVE_LICENSES)
+    caveated = sum(1 for i in items if data_caveats(i))
     stars = [i.get("stars") for i in items if isinstance(i.get("stars"), (int, float))]
 
     def _breakdown(field):
@@ -221,6 +236,7 @@ def cmd_stats(items, args, as_json=False):
             "total": total,
             "archived": archived,
             "permissively_licensed": permissive,
+            "caveated": caveated,
             "by_license": dict(_breakdown("license")),
             "by_language": dict(_breakdown("language")),
         }
@@ -236,6 +252,7 @@ def cmd_stats(items, args, as_json=False):
     print(f"Total candidates: {total}")
     print(f"Archived: {archived}/{total}")
     print(f"Permissively licensed: {permissive}/{total}")
+    print(f"Caveated (any *_note): {caveated}/{total}")
     if stars:
         avg = sum(stars) / len(stars)
         print(f"Stars: min={min(stars)} max={max(stars)} avg={avg:.1f}")
