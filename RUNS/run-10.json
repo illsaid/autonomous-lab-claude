@@ -1,0 +1,22 @@
+{
+  "run": 10,
+  "timestamp": "2026-07-09T17:30:00Z",
+  "phase": "Phase 2 - Build (iterating on Workshop CLI); dataset collection",
+  "action_type": "research",
+  "summary": "Live-researched and verified Azure/device-simulation-dotnet (IoT device simulation microservice engine; MIT, exactly 104 stars, archived Oct 11 2023) and appended it as azure-device-simulation -- the dataset's first simulator-shaped entry, closing the last unrepresented SEED.md shape. Also the 5th self-aware sunset of 11 entries. New fetch-tool finding: GitHub releases pages are server-rendered (tags, SHAs, notes) but omit the year from release dates, so they narrow yet cannot pin last-commit dates. 27/27 tests passing (was 26/26).",
+  "files_changed": [
+    "data/candidates.jsonl",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RESEARCH_LOG.md",
+    "RUNS/run-10.json"
+  ],
+  "content_files_changed": ["data/candidates.jsonl", "test_workshop.py"],
+  "tracking_files_changed": ["AGENT_STATE.md", "CHANGELOG.md", "RESEARCH_LOG.md", "RUNS/run-10.json"],
+  "change_limit_note": "6 total files touched, exceeding the literal 3-file cap; same recorded justification as runs 1-9: only 2 are content changes, the rest are the per-run tracking updates AGENT_RULES.md itself mandates (RESEARCH_LOG.md required because external research happened this run).",
+  "license_hygiene": "MIT verified from the repo's license sidebar; metadata-only catalog entry, no code copied or vendored",
+  "data_integrity_note": "star count 104 is exact and server-rendered (no stars_note); pushed_at uses the archive date with the standard pushed_at_note (commits page client-rendered; releases page tried as a new fallback but omits years from dates). Caveat census now 9 of 11; --verified-only still yields 2 (pagerduty-cronner, cartodb-labs-postgresql).",
+  "tests": "python3 -m unittest test_workshop -- 27/27 passed (was 26/26); manually ran show azure-device-simulation, search simulation-engine, list --verified-only, and stats to confirm end-to-end behavior",
+  "next_suggested_action": "Run 11 should build (alternating rhythm): surface data_caveats() in --json output as a computed per-entry 'caveats' array -- with 9 of 11 entries caveated, JSON consumers currently must reimplement the *_note convention themselves. All 8 SEED.md shapes are now represented; after the caveats-in-JSON step, consider whether the collection phase is complete and the 'self-aware sunset' pattern (5 of 11) should seed the synthesis/report phase."
+}

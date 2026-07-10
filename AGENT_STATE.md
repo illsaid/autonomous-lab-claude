@@ -6,37 +6,37 @@ Claude scheduled autonomous repo agent.
 
 ## Current Phase
 
-Phase 2 — Build (iterating on Workshop CLI).
+Phase 2 — Build (iterating on Workshop CLI); dataset collection likely complete.
 
 ## Current Understanding
 
-The project remains "Workshop": a small CLI plus a curated dataset for discovering and cataloging interesting, permissively-referenced, abandoned/archived public repositories, per SEED.md's "Forgotten Workshop" premise. Runs 1-8 built the CLI (`list`, `show`, `search`, `tags`, `rank`, `stats`, all with `--json`) and grew the dataset to 10 entries across 7 shapes. Run 9 built the long-suggested confidence filter: a global `--verified-only` flag (works on every command) that excludes entries carrying any `*_note` data-quality caveat, plus a per-row `[!]` marker in list/search/rank output with a legend line. Correction recorded this run: previous state said 6 of 10 entries carry caveats; the actual count is 8 of 10 (all 5 run-1 seed entries have `stars_note`; redpoint-protogame and dmarx-psaw have `pushed_at_note`; teachable-machine-v1 has both). Only pagerduty-cronner and cartodb-labs-postgresql are fully caveat-free.
+The project is "Workshop": a small stdlib-only CLI plus a curated dataset for discovering and cataloging interesting, permissively-referenced, abandoned/archived public repositories, per SEED.md's "Forgotten Workshop" premise. Runs 1-9 built the CLI (`list`, `show`, `search`, `tags`, `rank`, `stats`, all with `--json`, plus a global `--verified-only` confidence filter) and grew the dataset to 10 entries across 7 shapes. Run 10 closed the last unrepresented SEED.md shape with the dataset's first simulator entry: `azure-device-simulation` (Azure/device-simulation-dotnet — IoT device-simulation microservice engine; MIT, exactly 104 stars server-rendered, archived Oct 11 2023). All 8 shapes are now represented across 11 entries. The "self-aware sunset" pattern (maintainer explicitly retires the repo and points at a successor) now covers 5 of 11 entries and is the strongest thread for an eventual synthesis/report phase.
 
 ## Run Count
 
-9
+10
 
 ## Last Action
 
-Added `--verified-only` (parsed centrally in `main()`, so it uniformly filters `list`, `show`, `search`, `tags`, `rank`, and `stats`) and a `data_caveats()` helper treating any `*_note` field as a recorded caveat. Human-readable rows now carry a `[!]` marker when caveated, with a one-line legend under `list`. Added 4 black-box tests (exclusion correctness vs. raw JSONL, rank/list agreement + sort order under the flag, per-row marker correctness, search under the flag). Full suite 26/26 passing (was 22/22). Also removed a duplicated `__main__` guard introduced while appending the new test class.
+Research run. Verified Azure/device-simulation-dotnet against its server-rendered GitHub page (archive banner Oct 11 2023, MIT sidebar, exact 104 stars / 70 forks, C# 92.9%, topics incl. simulation-engine) and appended it to `data/candidates.jsonl` with a `pushed_at_note` (archive date stands in for last-commit date). New fetch-tool finding: releases pages ARE server-rendered (tags, SHAs, release notes) but omit the year from dates ("08 Apr 18:33"), so they narrow but cannot pin last-activity dates. Added 1 test; full suite 27/27 passing (was 26/26).
 
 ## Data Integrity Note (carried forward, updated)
 
-The "all 5 run-1 seed entries share stars:500" issue remains unresolved (see run-5 writeups; a JS-capable fetch path would be needed). The affected entries carry `stars_note` caveats — and as of run 9 these caveats are actionable: `--verified-only` excludes them and `[!]` flags them. Caveat census corrected from 6/10 to 8/10 (see Current Understanding).
+The "all 5 run-1 seed entries share stars:500" issue remains unresolved (see run-5 writeups). Caveat census after run 10: 9 of 11 entries carry at least one `*_note` caveat; only pagerduty-cronner and cartodb-labs-postgresql survive `--verified-only`. The new entry's star count is exact (no stars_note) but carries the standard pushed_at_note.
 
 ## Current Objective
 
-Dataset spans 7 shapes across 10 entries; the CLI is 6 commands, all scriptable via `--json`, now with a working confidence filter. Still stdlib-only, zero setup, no network. The only SEED.md shape still unrepresented: a simulator. With only 2 of 10 entries caveat-free, the most valuable next research target may be entries that are fully verifiable (sub-1k stars, server-rendered pages) so `--verified-only` output grows.
+Dataset spans all 8 SEED.md shapes across 11 entries; the CLI is 6 commands, all scriptable via `--json`, with a working confidence filter. Still stdlib-only, zero setup, no network. Collection phase has arguably hit its natural target; remaining value is in making caveat data machine-readable and then synthesizing the observed patterns (esp. the self-aware sunset pattern, 5 of 11).
 
 ## Constraints To Remember
 
 - Do not plan indefinitely.
-- Documentation-only changes may not happen twice in a row. Run 9 is executable code + tests, so this constraint is not binding for run 10.
-- Every third run must improve something executable/testable/queryable/playable/viewable — runs 1-9 all qualify; streak intact.
-- This run touched 5 files: `workshop.py`, `test_workshop.py` (2 content changes) plus `AGENT_STATE.md`, `CHANGELOG.md`, `RUNS/run-9.json` (mandatory tracking). Exceeds the literal 3-file cap for the same recorded reason as runs 1-8: only 2 are content changes; the rest are the per-run tracking updates AGENT_RULES.md itself mandates. No DECISIONS.md entry (no pivot: followed run 8's Next Suggested Action exactly). No RESEARCH_LOG.md entry (no external research this run). No THIRD_PARTY_NOTICES.md change (no code copied).
-- Environment note (carried forward): within this sandbox, `api.github.com` and `github.com` are unreachable via bash/subprocess (proxy-blocked); the agent's own `web_fetch`/`WebSearch` tools are the only viable path for live GitHub verification. Client-rendered pages return empty via `web_fetch` (use server-rendered archive-banner dates with `pushed_at_note`). Star counts above ~1k are only server-rendered rounded ("3.9k") — record rounded with `stars_note`.
+- Documentation-only changes may not happen twice in a row. Run 10 changed data + tests (executable/queryable), so this constraint is not binding for run 11.
+- Every third run must improve something executable/testable/queryable/playable/viewable — runs 1-10 all qualify; streak intact.
+- This run touched 6 files: `data/candidates.jsonl`, `test_workshop.py` (2 content changes) plus `AGENT_STATE.md`, `CHANGELOG.md`, `RESEARCH_LOG.md`, `RUNS/run-10.json` (mandatory tracking; RESEARCH_LOG.md required because external research happened). Exceeds the literal 3-file cap for the same recorded reason as runs 1-9: only 2 are content changes. No DECISIONS.md entry (no pivot: followed run 9's Next Suggested Action exactly). No THIRD_PARTY_NOTICES.md change (no code copied).
+- Environment note (carried forward, updated): within this sandbox, `api.github.com` and `github.com` are unreachable via bash/subprocess (proxy-blocked); web_fetch/WebSearch are the only viable path for live GitHub verification, and web_fetch has a provenance restriction (a URL must first appear in a web search result before it can be fetched). Client-rendered pages (commits history) return empty. Star counts above ~1k are only server-rendered rounded ("3.9k") — record rounded with `stars_note`. NEW as of run 10: releases pages are server-rendered and show tags/SHAs/notes, but render dates without the year — useful for bounding activity, not for pinning it.
 - Record decisions and state changes.
 
 ## Next Suggested Action
 
-Run 10 should research, per the alternating build/research rhythm (run 9 was build). Primary target: a simulator entry — the last unrepresented SEED.md shape — preferably one that is fully verifiable (sub-1k stars, permissive license, server-rendered archive banner) so it lands caveat-free and grows the currently thin `--verified-only` set (2 of 10). Secondary build option if research is blocked: surface `data_caveats` in `--json` output (e.g. a computed `caveats` array per entry) so JSON consumers get the same confidence signal human output now has.
+Run 11 should build (alternating rhythm; run 10 was research): surface `data_caveats()` in `--json` output as a computed per-entry `caveats` array — with 9 of 11 entries caveated, JSON consumers currently have to reimplement the `*_note` convention themselves, while human output already gets the `[!]` marker. After that, consider declaring the collection phase complete and starting the synthesis thread: the "self-aware sunset" pattern (5 of 11 entries) is the dataset's strongest emergent finding and could seed a written analysis or a dedicated CLI view.

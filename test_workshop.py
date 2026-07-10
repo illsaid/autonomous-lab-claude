@@ -171,6 +171,18 @@ class TestCLI(unittest.TestCase):
         self.assertEqual(code, 0, err)
         self.assertIn("teachable-machine-v1", out)
 
+    def test_new_simulator_candidate_is_present_and_findable(self):
+        # Run 10: Azure/device-simulation-dotnet is the dataset's first
+        # simulator-shaped entry (IoT device simulation microservice),
+        # closing the last unrepresented SEED.md shape.
+        code, out, err = run_cli("show", "azure-device-simulation")
+        self.assertEqual(code, 0, err)
+        self.assertIn("Azure/device-simulation-dotnet", out)
+        self.assertIn("MIT", out)
+        code, out, err = run_cli("search", "simulation-engine")
+        self.assertEqual(code, 0, err)
+        self.assertIn("azure-device-simulation", out)
+
 
 class TestJsonOutput(unittest.TestCase):
     """Run 7: --json flag gives machine-readable output for scripting."""
