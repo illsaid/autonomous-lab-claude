@@ -132,3 +132,12 @@
 - One-line README quickstart update (`show <id|slug>`) so the front door documents the new key. 3 content files changed (workshop.py, test_workshop.py, README.md) — at the cap.
 - Still stdlib-only, zero setup, no network. No data changes; censuses unchanged (9/11 caveated, 6/11 sunsets). No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.
 
+## Run 17 — 2026-07-10
+
+- Added `--sort stars|age|score` to `list` (run 16's suggested executable option): `stars` puts the most-starred entries first (missing star counts last), `age` puts the oldest last push first — the most "forgotten" on top (unparseable dates last), and `score` orders by `interest_score()` descending, matching `rank` without the score column. Both `--sort key` and `--sort=key` forms work; the sort applies before `--json` output and composes with `--verified-only`; an unknown key or missing value exits 2 with the valid keys listed.
+- Implementation: a new `sort_items()` helper plus flag parsing in `cmd_list`; no other command touched, and default `list` output (dataset file order) is unchanged, verified by test.
+- Added 8 black-box tests (`TestListSort`): default file order preserved, stars descending cross-checked against the raw JSONL, oldest-push-first ordering, score ordering agreeing with `rank --json`, `--sort=`/`--sort` form equivalence, unknown-key exit 2, missing-value exit 2, and composition with `--verified-only`. Full suite: 54/54 passing (was 46/46).
+- One-line README quickstart update documenting the flag. 3 content files changed (workshop.py, test_workshop.py, README.md) — at the cap.
+- Chose the executable option over the final report because there is no evidence the window is closing and the rules prefer executable behavior; the final report is now the single remaining packaging item, suggested for run 18.
+- Still stdlib-only, zero setup, no network. No data changes; censuses unchanged (9/11 caveated, 6/11 sunsets). No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.
+

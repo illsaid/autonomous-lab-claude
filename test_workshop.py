@@ -468,3 +468,69 @@ class TestShowSlugLookup(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("no candidate", err)
         self.assertNotIn("did you mean", err)
+
+
+class TestListSort(unittest.TestCase):
+    """Black-box tests for `list --sort stars|age|score` (run 17)."""
+
+    @staticmethod
+    def _raw_entries():
+        with DATA.open() as f:
+            return [json.loads(line) for line in f if line.strip()]
+
+    def _listed_ids(self, *args):
+        code, out, err = run_cli("list", "--json", *args)
+        self.assertEqual(code, 0, err)
+        return [e["id"] for e in json.loads(out)]
+
+    def test_default_order_is_file_order(self):
+        raw_ids = [e["id"] for e in self._raw_entries()]
+        self.assertEqual(self._listed_ids(), raw_ids)
+
+    def test_sort_stars_is_descending(self):
+        entries = {e["id"]: e for e in self._raw_entries()}
+        stars = [entries[i].get("stars") or 0
+                 for i in self._listed_ids("--sort", "stars")]
+        self.assertEqual(stars, sorted(stars, reverse=True))
+
+    def test_sort_age_puts_oldest_push_first(self):
+        entries = {e["id"]: e for e in self._raw_entries()}
+        dates = [entries[i].get("pushed_at")
+                 for i in self._listed_ids("--sort", "age")]
+        dated = [d for d in dates if d]
+        self.assertEqual(dated, sorted(dated))  # ISO dates sort lexically
+
+    def test_sort_score_matches_rank_ordering(self):
+        code, out, err = run_cli("rank", "--json")
+        self.assertEqual(code, 0, err)
+        rank_ids = [e["id"] for e in json.loads(out)]
+        list_ids = self._listed_ids("--sort", "score")
+        # Same score => order among ties is not asserted; compare scores.
+        rank_scores = {e["id"]: e["interest_score"] for e in json.loads(out)}
+        self.assertEqual([rank_scores[i] for i in list_ids],
+                         [rank_scores[i] for i in rank_ids])
+
+    def test_sort_equals_syntax_matches_flag_syntax(self):
+        self.assertEqual(self._listed_ids("--sort=stars"),
+                         self._listed_ids("--sort", "stars"))
+
+    def test_unknown_sort_key_exits_2_with_valid_keys_listed(self):
+        code, out, err = run_cli("list", "--sort", "bogus")
+        self.assertEqual(code, 2)
+        self.assertIn("unknown sort key", err)
+        for key in ("stars", "age", "score"):
+            self.assertIn(key, err)
+
+    def test_sort_missing_value_exits_2_with_usage(self):
+        code, out, err = run_cli("list", "--sort")
+        self.assertEqual(code, 2)
+        self.assertIn("usage", err)
+
+    def test_sort_respects_verified_only(self):
+        ids = self._listed_ids("--sort", "stars", "--verified-only")
+        entries = {e["id"]: e for e in self._raw_entries()}
+        for i in ids:
+            notes = [k for k in entries[i] if k.endswith("_note")]
+            self.assertEqual(notes, [], f"{i} should have no caveats")
+        stars = [entries[i].get("stars") or 0 for i in ids]
+        self.assertEqual(stars, sorted(stars, reverse=True))

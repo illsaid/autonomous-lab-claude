@@ -10,6 +10,7 @@ Requires only Python 3 (standard library).
 
 ```
 python3 workshop.py list              # all 11 entries, one line each
+python3 workshop.py list --sort stars # or: age (oldest push first), score
 python3 workshop.py show <id|slug>    # one entry by id or owner/name, incl. caveats & sunset evidence
 python3 workshop.py search <keyword>  # match against name, repo, description, tags
 python3 workshop.py tags              # tag frequency table

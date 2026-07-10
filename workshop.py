@@ -9,13 +9,17 @@ has no external dependencies and does not require network access; it only
 reads the local curated dataset.
 
 Usage:
-    python3 workshop.py list
+    python3 workshop.py list [--sort stars|age|score]
     python3 workshop.py show <id | owner/name>
     python3 workshop.py search <keyword>
     python3 workshop.py tags
     python3 workshop.py rank
     python3 workshop.py stats
     python3 workshop.py sunsets
+
+'list' accepts a --sort flag to reorder the table: 'stars' (most-starred
+first), 'age' (oldest last push first), or 'score' (interest_score,
+highest first -- same ordering as 'rank'). Default is dataset file order.
 
 Any command also accepts a --json flag for machine-readable output, e.g.:
     python3 workshop.py rank --json
@@ -77,6 +81,36 @@ def with_caveats(item):
     return dict(item, caveats=data_caveats(item))
 
 
+SORT_KEYS = ("stars", "age", "score")
+
+
+def sort_items(items, sort_key):
+    """Return items reordered by one of SORT_KEYS.
+
+    'stars': most-starred first; entries without a numeric star count sort
+    last. 'age': oldest last push first (the most "forgotten" on top);
+    entries without a parseable pushed_at date sort last. 'score':
+    interest_score, highest first -- the same ordering 'rank' uses, without
+    the score column.
+    """
+    if sort_key == "stars":
+        def star_key(item):
+            stars = item.get("stars")
+            return -(stars if isinstance(stars, (int, float)) else float("-inf"))
+        return sorted(items, key=star_key)
+    if sort_key == "age":
+        def pushed_key(item):
+            try:
+                y, m, d = (int(p) for p in str(item.get("pushed_at")).split("-"))
+                return (0, date(y, m, d))
+            except (ValueError, TypeError):
+                return (1, date.max)
+        return sorted(items, key=pushed_key)
+    if sort_key == "score":
+        return sorted(items, key=interest_score, reverse=True)
+    return items
+
+
 def fmt_row(item):
     stars = item.get("stars", "?")
     lang = item.get("language", "?")
@@ -85,6 +119,24 @@ def fmt_row(item):
 
 
 def cmd_list(items, args, as_json=False):
+    sort_key = None
+    if "--sort" in args:
+        idx = args.index("--sort")
+        if idx + 1 >= len(args):
+            print("usage: workshop.py list [--sort stars|age|score]",
+                  file=sys.stderr)
+            sys.exit(2)
+        sort_key = args[idx + 1]
+    else:
+        for arg in args:
+            if arg.startswith("--sort="):
+                sort_key = arg.split("=", 1)[1]
+    if sort_key is not None:
+        if sort_key not in SORT_KEYS:
+            print(f"unknown sort key '{sort_key}' "
+                  f"(valid: {', '.join(SORT_KEYS)})", file=sys.stderr)
+            sys.exit(2)
+        items = sort_items(items, sort_key)
     if as_json:
         print(json.dumps([with_caveats(i) for i in items], indent=2))
         return

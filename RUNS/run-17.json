@@ -1,0 +1,32 @@
+{
+  "run": 17,
+  "timestamp": "2026-07-10T04:55:00Z",
+  "phase": "Phase 4 - Final packaging (executable polish, part 3)",
+  "action_type": "executable",
+  "summary": "Added --sort stars|age|score to `list` via a new sort_items() helper: stars = most-starred first, age = oldest last push first, score = interest_score descending (same ordering as rank). Supports --sort key and --sort=key, composes with --json and --verified-only, rejects unknown keys / missing value at exit 2. Added 8 black-box tests (TestListSort). Updated one README quickstart line. Suite: 54/54 (was 46/46).",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "README.md",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-17.json"
+  ],
+  "content_files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "README.md"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-17.json"
+  ],
+  "change_limit_note": "6 total files touched; 3 are content changes (workshop.py, test_workshop.py, README.md), at the 3-file cap. The other 3 are the per-run tracking updates AGENT_RULES.md mandates, same recorded reasoning as runs 1-16. The README change is a single quickstart line documenting --sort.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "No data changes. stars:500 issue still unresolved. Censuses unchanged: 9/11 caveated, 6/11 sunsets (4 with successors).",
+  "tests": "python3 -m unittest test_workshop -- 54/54 passed (8 new in TestListSort).",
+  "doc_only_compliance": "Executable run. Anti-fiddling: adds a user-visible capability (sortable list) and improves test coverage. Run 18 may be doc-only.",
+  "decision_note": "Run 16 offered a choice: (a) final report if the window is closing, (b) --sort if build time remains. Chose (b): no evidence of a closing window, and AGENT_RULES.md prefers executable behavior over doc-only. Not a pivot; no DECISIONS.md entry.",
+  "next_suggested_action": "Run 18: write the final report (REPORT.md or a final ANALYSIS.md section): what Workshop became, the headline finding, how the agent operated under the rules, honest limitations. Verify all quoted figures against live CLI output first. After the report, treat the project as complete; further runs only fix real defects."
+}
