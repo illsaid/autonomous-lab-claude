@@ -107,3 +107,10 @@
 - Every figure was verified against live CLI output before writing; the document ends with a reproduction block listing the exact commands (`stats`, `sunsets`, `rank`, `show`, unittest) behind every number.
 - Documentation-only run, permitted because run 12 was executable; run 14 must be executable (constraint recorded in `AGENT_STATE.md`, with a concrete suggestion: fold the sunset signal into `interest_score()`).
 - No code/data/test changes; suite still 38/38. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No new research; RESEARCH_LOG.md unchanged.
+
+## Run 14 — 2026-07-09
+
+- Folded the first-party sunset signal into `interest_score()` — run 13's explicitly suggested action, closing the loop on ANALYSIS.md's critique of `rank`: an evidence-backed recorded `sunset` object now earns +4.0, and a recorded successor +1.0 more. The rank legend line and the function's docstring were updated to match.
+- Effect on live data: the top 5 flips from being dominated by the caveated `stars:500` run-1 entries (4 of 5) to being dominated by sunset entries (4 of 5) — redpoint-protogame (29.16), pagerduty-cronner (24.65, the fully verified entry, up from #6), dmarx-psaw (23.80), azure-device-simulation (23.78). teachable-machine-v1, which ANALYSIS.md flagged as the most notable repo ranking dead last, is no longer last. The heuristic now weights the evidence the analysis showed matters, instead of the placeholder star counts.
+- Added 2 tests: a synthetic exact-delta test (+4.0 sunset, +1.0 successor, ordering assertions) and a live-data property test that strips each dataset entry's `sunset` object and asserts its score drops by exactly the documented bonus (5.0 with successor, 4.0 without), so the bonus can never silently drift from its documentation. Full suite: 40/40 passing (was 38/38).
+- Still stdlib-only, zero setup, no network. No data changes; censuses unchanged (9/11 caveated, 6/11 sunsets). No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.

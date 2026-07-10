@@ -1,0 +1,28 @@
+{
+  "run": 14,
+  "timestamp": "2026-07-09T22:10:00Z",
+  "phase": "Phase 3 - Synthesis (heuristic aligned with analysis)",
+  "action_type": "build",
+  "summary": "Folded the first-party sunset signal into interest_score() (run 13's explicitly suggested action, closing the loop on ANALYSIS.md's critique of rank): +4.0 for an evidence-backed recorded sunset object, +1.0 more when a successor is recorded. Updated the rank legend and the function's docstring. Result on live data: the top 5 flips from 4/5 placeholder-starred run-1 entries to 4/5 sunset entries, the fully verified pagerduty-cronner rises to #2, and teachable-machine-v1 is no longer last. Added 2 tests (synthetic exact-delta test and a live-data property test that strips each entry's sunset object and checks the exact bonus).",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-14.json"
+  ],
+  "content_files_changed": [
+    "workshop.py",
+    "test_workshop.py"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-14.json"
+  ],
+  "change_limit_note": "5 total files touched; 2 are content changes (workshop.py, test_workshop.py), under the 3-file cap. The other 3 are the per-run tracking updates AGENT_RULES.md itself mandates, same recorded reasoning as runs 1-13.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "No data changes. stars:500 issue still unresolved, but the rank heuristic is no longer dominated by it (was ANALYSIS.md's main critique). Censuses unchanged: 9/11 caveated, 6/11 sunsets (4 with successors).",
+  "tests": "python3 -m unittest test_workshop -- 40/40 passed (was 38/38). New: exact +4.0/+1.0 delta on synthetic entries; live-data property that every sunset entry's score drops by exactly its documented bonus when the sunset object is stripped.",
+  "next_suggested_action": "Final packaging: rewrite README.md as the project front door (what Workshop is, how to run each command, the sunset finding, pointer to ANALYSIS.md). Doc-only is permitted for run 15 since run 14 was executable, and it is allowed post-MVP under the anti-fiddling rule's 'helps a user run the project' and 'final packaging' clauses. ANALYSIS.md's rank-critique section should also get a one-line update noting the run-14 fix, ideally in the same run if the file cap allows (README + ANALYSIS.md = 2 content files)."
+}

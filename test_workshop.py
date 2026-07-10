@@ -114,6 +114,44 @@ class TestCLI(unittest.TestCase):
         proprietary = dict(base, license="Custom")
         self.assertGreater(interest_score(permissive), interest_score(proprietary))
 
+    def test_interest_score_rewards_first_party_sunset_signal(self):
+        # ANALYSIS.md conclusion folded into the heuristic (run 14): an
+        # explicitly retired repo outranks an otherwise-identical one.
+        from workshop import interest_score
+        base = {"stars": 300, "pushed_at": "2020-01-01", "topics": [],
+                "license": "MIT"}
+        plain = dict(base)
+        sunset = dict(base, sunset={"evidence": "archive banner"})
+        with_successor = dict(
+            base, sunset={"evidence": "archive banner",
+                          "successor": "https://example.com/v2"})
+        self.assertGreater(interest_score(sunset), interest_score(plain))
+        self.assertGreater(interest_score(with_successor),
+                           interest_score(sunset))
+        # Exact deltas: +4.0 for the sunset signal, +1.0 for a successor.
+        self.assertAlmostEqual(
+            interest_score(sunset) - interest_score(plain), 4.0)
+        self.assertAlmostEqual(
+            interest_score(with_successor) - interest_score(sunset), 1.0)
+
+    def test_sunset_bonus_applies_to_every_dataset_sunset_entry(self):
+        # Live-data property: removing an entry's sunset object lowers its
+        # score by exactly the documented bonus (5.0 with a recorded
+        # successor, 4.0 without), and never affects non-sunset entries.
+        from workshop import interest_score, load_candidates
+        found = 0
+        for item in load_candidates():
+            sunset = item.get("sunset")
+            if not isinstance(sunset, dict):
+                continue
+            found += 1
+            stripped = {k: v for k, v in item.items() if k != "sunset"}
+            expected = 5.0 if sunset.get("successor") else 4.0
+            self.assertAlmostEqual(
+                interest_score(item) - interest_score(stripped), expected,
+                msg=item["id"])
+        self.assertGreater(found, 0)
+
     def test_stats_runs_and_reports_totals(self):
         code, out, err = run_cli("stats")
         self.assertEqual(code, 0, err)

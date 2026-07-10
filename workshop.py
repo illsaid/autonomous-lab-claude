@@ -173,6 +173,13 @@ def interest_score(item):
     and topic richness (more topics usually means more curator/community
     context to judge the project by).
 
+    As of run 14 it also rewards a first-party sunset signal: +4.0 when the
+    maintainer explicitly retired the repo (a recorded, evidence-backed
+    'sunset' object), and +1.0 more when the retirement pointed at a
+    successor. ANALYSIS.md argued this is the strongest "forgotten but
+    deliberate" evidence in the dataset -- stronger than the star/age
+    proxies, which had let placeholder-starred entries dominate the top 5.
+
     This is a simple, explainable, deterministic heuristic over local
     metadata only -- not a claim of objective "quality".
     """
@@ -192,7 +199,15 @@ def interest_score(item):
     license_score = 3.0 if item.get("license") in PERMISSIVE_LICENSES else 0.0
     topic_score = min(len(item.get("topics", [])), 5)
 
-    return round(star_score + age_score + license_score + topic_score, 2)
+    sunset_score = 0.0
+    sunset = item.get("sunset")
+    if isinstance(sunset, dict):
+        sunset_score = 4.0
+        if sunset.get("successor"):
+            sunset_score += 1.0
+
+    return round(star_score + age_score + license_score + topic_score
+                 + sunset_score, 2)
 
 
 def cmd_rank(items, args, as_json=False):
@@ -211,7 +226,8 @@ def cmd_rank(items, args, as_json=False):
         score = interest_score(item)
         print(f"{score:>6.2f}  {fmt_row(item)}")
     print(f"\n{len(ranked)} candidate(s) ranked by interest_score "
-          f"(stars sweet-spot + age + permissive license + topic richness).")
+          f"(stars sweet-spot + age + permissive license + topic richness "
+          f"+ first-party sunset signal).")
 
 
 
