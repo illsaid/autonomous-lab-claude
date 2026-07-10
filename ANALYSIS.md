@@ -46,5 +46,5 @@ python3 workshop.py stats            # 11 total; 11/11 archived; 9/11 permissive
 python3 workshop.py sunsets          # the 6 sunset entries, successors, and [!] caveat markers
 python3 workshop.py rank             # the heuristic ordering discussed above
 python3 workshop.py show <id>        # per-entry fields, caveats, and sunset evidence
-python3 -m unittest test_workshop    # 40 tests, including evidence-traceability enforcement
+python3 -m unittest test_workshop    # 54 tests, including evidence-traceability enforcement
 ```

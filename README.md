@@ -26,7 +26,7 @@ Two global flags work on every command:
 --verified-only   # drop any entry with an unresolved data caveat (2 of 11 survive)
 ```
 
-Run the test suite (40 black-box tests, no network):
+Run the test suite (54 black-box tests, no network):
 
 ```
 python3 -m unittest test_workshop
@@ -46,7 +46,7 @@ The full writeup — including a five-style taxonomy of how maintainers retire r
 
 - `workshop.py` — the CLI (single file, stdlib only)
 - `data/candidates.jsonl` — the curated dataset
-- `test_workshop.py` — 40 black-box tests
+- `test_workshop.py` — 54 black-box tests
 - `ANALYSIS.md` — what the dataset shows
 - `RESEARCH_LOG.md` — per-entry verification writeups (runs 1–10)
 - `MISSION.md`, `SEED.md`, `AGENT_RULES.md`, `JUDGING.md` — the experiment's fixed frame

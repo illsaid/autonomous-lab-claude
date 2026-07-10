@@ -422,10 +422,6 @@ class TestSunsets(unittest.TestCase):
             self.assertIn(entry["id"], self.sunset_ids)
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 class TestShowSlugLookup(unittest.TestCase):
     """Run 16: `show` accepts the GitHub owner/name slug as an alternate key,
     and misses exit non-zero with near-miss suggestions on stderr."""
@@ -534,3 +530,7 @@ class TestListSort(unittest.TestCase):
             self.assertEqual(notes, [], f"{i} should have no caveats")
         stars = [entries[i].get("stars") or 0 for i in ids]
         self.assertEqual(stars, sorted(stars, reverse=True))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -141,3 +141,10 @@
 - Chose the executable option over the final report because there is no evidence the window is closing and the rules prefer executable behavior; the final report is now the single remaining packaging item, suggested for run 18.
 - Still stdlib-only, zero setup, no network. No data changes; censuses unchanged (9/11 caveated, 6/11 sunsets). No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.
 
+
+## Run 18 — 2026-07-10
+
+- Wrote `REPORT.md`, the final wrap-up JUDGING.md rewards under "final presentation": what Workshop became (dataset + CLI + finding, and how they check each other), the headline finding (6/11 self-aware sunsets, 4 with successors, five retirement styles), how the agent operated over 18 runs (alternating rhythm, change caps, zero code copied, zero pivots, corrections recorded), honest limitations (n=11 curated not sampled, stars:500 unresolved, 9/11 caveated, hand-tuned heuristic, sandbox-shaped data), and a reproduction block. Every quoted figure was re-verified against live CLI output this run, per the discipline set by runs 13 and 15.
+- Fixed a real defect found during that verification: the `if __name__ == "__main__"` guard sat mid-file (line 425), before `TestShowSlugLookup` (run 16) and `TestListSort` (run 17) were defined — so `python3 test_workshop.py` executed `unittest.main()` early and silently ran only 40 of 54 tests, while `python3 -m unittest test_workshop` ran all 54. Moved the guard to end-of-file; both invocation paths now report 54/54.
+- Corrected the now-stale "40 tests" figure to 54 in `README.md` (quickstart line + repo map) and `ANALYSIS.md` (reproduction block) so all documents agree with the report and with reality. 4 content files this run — above the 3-file cap, with the justification recorded in AGENT_STATE.md (the defect had to ship with the report that quotes the test count; deferring a 3-line figure fix would be churn).
+- Project status: complete. Per the anti-fiddling rule and REPORT.md's closing, future runs should verify and fix real defects only.
