@@ -29,6 +29,8 @@ The five remaining entries (`sorentwo-readthis`, `candybar-library`, `kanjielu-j
 
 `python3 workshop.py rank` orders entries by `interest_score()` (star sweet-spot + age + permissive license + topic richness). Its output is honest in an unflattering way: 4 of the top 5 slots go to run-1 entries whose star counts carry the unresolved `stars:500` caveat (see below) — the placeholder value happens to sit squarely in the heuristic's sweet spot. Meanwhile the two fully verified entries (`pagerduty-cronner`, `cartodb-labs-postgresql`) rank 6th and 10th, and the most objectively notable repo (`teachable-machine-v1`, ~3.9k stars, a Google Creative Lab product with a shipped v2) ranks *last*, because the heuristic penalizes high star counts. The lesson: a "forgotten-but-interesting" score built on stars and age is easy to compute and easy to fool; the sunset signals above are stronger evidence of the thing the seed actually cares about.
 
+*Update (run 14): this critique was addressed — `interest_score()` now weights the first-party sunset signal (+4.0, +1.0 more with a recorded successor), so the top 5 is led by evidence-backed sunset entries rather than the caveated `stars:500` placeholders, and `teachable-machine-v1` no longer ranks last.*
+
 ## The dataset audits itself
 
 9 of 11 entries carry at least one `*_note` caveat (`stats` reports this; `--verified-only` filters on it). The largest is the run-1 `stars:500` anomaly: all five seed entries report exactly 500 stars. Run 5 re-fetched all five live pages (each still returned 500) and ran a control fetch (`torvalds/linux`, ~236k, correct), so the value can be neither confirmed nor corrected with this sandbox's tools — it is flagged in-band via `stars_note` instead of silently kept or invented. Two census corrections happened the same way (caveats 6→8 in run 9, sunsets 5→6 in run 12), both recorded rather than papered over. Only 2 of 11 entries survive `--verified-only`. A dataset this small that visibly tracks its own uncertainty is more useful than a larger one that doesn't.
@@ -44,5 +46,5 @@ python3 workshop.py stats            # 11 total; 11/11 archived; 9/11 permissive
 python3 workshop.py sunsets          # the 6 sunset entries, successors, and [!] caveat markers
 python3 workshop.py rank             # the heuristic ordering discussed above
 python3 workshop.py show <id>        # per-entry fields, caveats, and sunset evidence
-python3 -m unittest test_workshop    # 38 tests, including evidence-traceability enforcement
+python3 -m unittest test_workshop    # 40 tests, including evidence-traceability enforcement
 ```

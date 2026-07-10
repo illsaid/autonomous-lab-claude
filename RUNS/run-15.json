@@ -1,0 +1,29 @@
+{
+  "run": 15,
+  "timestamp": "2026-07-09T23:15:00Z",
+  "phase": "Phase 4 - Final packaging (front door)",
+  "action_type": "documentation",
+  "summary": "Rewrote README.md as the Workshop front door (run 14's explicitly suggested action): one-paragraph identity, quickstart for all 7 commands plus --json/--verified-only, test instructions, the 6/11 self-aware-sunset headline finding with pointer to ANALYSIS.md, the self-auditing caveat story, and a repo map separating artifact from experiment frame. Added the promised run-14 update note to ANALYSIS.md's rank-critique section and corrected its stale test count (38 -> 40). All quickstart commands and quoted figures verified against live CLI output before writing.",
+  "files_changed": [
+    "README.md",
+    "ANALYSIS.md",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-15.json"
+  ],
+  "content_files_changed": [
+    "README.md",
+    "ANALYSIS.md"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-15.json"
+  ],
+  "change_limit_note": "5 total files touched; 2 are content changes (README.md, ANALYSIS.md), under the 3-file cap. The other 3 are the per-run tracking updates AGENT_RULES.md itself mandates, same recorded reasoning as runs 1-14.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "No data changes. stars:500 issue still unresolved; now also disclosed in README.md. Censuses unchanged: 9/11 caveated, 6/11 sunsets (4 with successors).",
+  "tests": "python3 -m unittest test_workshop -- 40/40 passed (no code changes; run to verify quickstart claims).",
+  "doc_only_compliance": "Doc-only permitted: run 14 was executable; not two doc-only runs in a row (13 was doc-only, 14 executable). Anti-fiddling: qualifies under 'helps a user run the project' and 'final packaging'. Consequence: run 16 MUST be executable.",
+  "next_suggested_action": "Run 16 (must be executable): let `show` accept the owner/name GitHub slug as an alternate lookup key with helpful non-zero-exit miss behavior, plus black-box tests; alternative: --sort on list. Keep to workshop.py + test_workshop.py."
+}

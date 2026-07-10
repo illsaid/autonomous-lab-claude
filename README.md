@@ -1,30 +1,53 @@
-# Autonomous Lab Claude
+# Workshop — a catalog of repos that knew they were dying
 
-This repository is part of an autonomous software experiment.
+**Workshop** is a small, stdlib-only Python CLI plus a hand-curated dataset for exploring "forgotten workshop" repositories: interesting, abandoned, archived open-source projects surfaced from public GitHub research. No dependencies, no network, no setup — clone and run.
 
-A scheduled Claude agent will periodically inspect this repo, read its prior state, choose one small next action, make limited changes, and record what it did.
+Built incrementally by a scheduled autonomous Claude agent under the constraints in `AGENT_RULES.md` (part of a blind multi-agent experiment; see `JUDGING.md`).
 
-The goal is not to begin with a fixed product idea. The goal is to see whether repeated, constrained autonomous work can turn an empty repository into something useful, strange, illuminating, or worth continuing.
+## Quickstart
 
-## Core idea
+Requires only Python 3 (standard library).
 
-The repo starts with a mission, a seed, rules, judging criteria, state files, and logs. The agent should use those files as memory.
+```
+python3 workshop.py list              # all 11 entries, one line each
+python3 workshop.py show <id>         # every field of one entry, incl. caveats & sunset evidence
+python3 workshop.py search <keyword>  # match against name, repo, description, tags
+python3 workshop.py tags              # tag frequency table
+python3 workshop.py rank              # entries ordered by interest_score()
+python3 workshop.py stats             # censuses: archived, licenses, caveats, sunsets
+python3 workshop.py sunsets           # the 6 self-aware sunsets and their successors
+```
 
-The project may become a tool, dataset, simulator, game, research assistant, creative system, automation utility, knowledge base, or something else. The only requirement is that it must become increasingly concrete and usable over time.
+Two global flags work on every command:
 
-## Key files
+```
+--json            # machine-readable output (each entry carries a computed `caveats` array)
+--verified-only   # drop any entry with an unresolved data caveat (2 of 11 survive)
+```
 
-- `MISSION.md` — broad mission
-- `SEED.md` — initial provocation
-- `AGENT_RULES.md` — operating constraints
-- `JUDGING.md` — how the project will be evaluated
-- `AGENT_STATE.md` — current agent memory
-- `CHANGELOG.md` — human-readable change log
-- `DECISIONS.md` — decision and pivot log
-- `RESEARCH_LOG.md` — public research notes
-- `THIRD_PARTY_NOTICES.md` — license and attribution record
-- `RUNS/` — machine-readable run records
+Run the test suite (40 black-box tests, no network):
 
-## Experiment rule
+```
+python3 -m unittest test_workshop
+```
 
-Explore widely, but converge through artifacts.
+## The headline finding
+
+The common intuition is that abandoned repos rot silently. This catalog says otherwise: **6 of the 11 entries (55%) are "self-aware sunsets"** — the maintainers explicitly retired the repo via a deprecation banner, an archive announcement, or a handoff, and 4 of the 6 point users at a successor. First-party abandonment signals turn out to be common and machine-readable, which is a different design premise for any future discovery tool than commit-date heuristics.
+
+The full writeup — including a five-style taxonomy of how maintainers retire repos, a critique of this repo's own ranking heuristic, and the dataset's limitations — is in [`ANALYSIS.md`](ANALYSIS.md). Every number in it reproduces from the CLI.
+
+## The dataset audits itself
+
+`data/candidates.jsonl` (11 entries, JSONL, one object per line) records its own uncertainty in-band: 9 of 11 entries carry at least one `*_note` caveat — most notably five run-1 entries whose `stars:500` value could not be verified with this sandbox's tools and is flagged rather than silently kept. Caveats surface as `[!]` markers in human output, as `caveats` arrays in `--json`, and as a filter via `--verified-only`. Sunset claims must carry an `evidence` string traceable to `RESEARCH_LOG.md`; a test enforces this.
+
+## Repo map
+
+- `workshop.py` — the CLI (single file, stdlib only)
+- `data/candidates.jsonl` — the curated dataset
+- `test_workshop.py` — 40 black-box tests
+- `ANALYSIS.md` — what the dataset shows
+- `RESEARCH_LOG.md` — per-entry verification writeups (runs 1–10)
+- `MISSION.md`, `SEED.md`, `AGENT_RULES.md`, `JUDGING.md` — the experiment's fixed frame
+- `AGENT_STATE.md`, `CHANGELOG.md`, `DECISIONS.md`, `RUNS/` — the agent's memory and audit trail
+- `THIRD_PARTY_NOTICES.md` — license/attribution record (no external code was copied)
