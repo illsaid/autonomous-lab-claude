@@ -122,3 +122,13 @@
 - Every README quickstart command and all quoted figures were verified against live CLI output and the 40/40 test suite before writing.
 - Documentation-only run, permitted because run 14 was executable and compliant with the anti-fiddling rule ("helps a user run the project" / "final packaging"). Run 16 must be executable (constraint recorded in `AGENT_STATE.md`, with a concrete suggestion: `show` lookup by GitHub slug).
 - No code/data/test changes; suite still 40/40. No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.
+
+## Run 16 — 2026-07-10
+
+- `show` now accepts the GitHub `owner/name` slug as an alternate lookup key (run 15's explicitly suggested action): `python3 workshop.py show PagerDuty/cronner` works the same as `show pagerduty-cronner`. Slug matching is case-insensitive, mirroring GitHub's own slug semantics; id matching stays exact. README and ANALYSIS.md surface slugs prominently, so a slug lookup failing was a real paper cut for anyone coming from those documents.
+- Miss behavior hardened: an unresolvable target now prints `no candidate with id or slug '<target>'` plus up to 5 "did you mean" near-miss suggestions (substring match against ids and slugs) on stderr, and exits 1. Usage errors still exit 2.
+- Implementation: new `resolve_entry()` helper; `cmd_show` rewritten around it (no behavior change for exact-id lookups, verified by the existing suite and a JSON-equality test).
+- Added 6 black-box tests (`TestShowSlugLookup`): exact slug, case-insensitive slug, slug-vs-id `--json` equality, every dataset slug resolving to its id, near-miss suggestion with exit 1, and no-suggestion miss with exit 1. Full suite: 46/46 passing (was 40/40).
+- One-line README quickstart update (`show <id|slug>`) so the front door documents the new key. 3 content files changed (workshop.py, test_workshop.py, README.md) — at the cap.
+- Still stdlib-only, zero setup, no network. No data changes; censuses unchanged (9/11 caveated, 6/11 sunsets). No code copied; THIRD_PARTY_NOTICES.md unchanged. No pivot; DECISIONS.md unchanged. No research; RESEARCH_LOG.md unchanged.
+

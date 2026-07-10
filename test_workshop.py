@@ -424,3 +424,47 @@ class TestSunsets(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestShowSlugLookup(unittest.TestCase):
+    """Run 16: `show` accepts the GitHub owner/name slug as an alternate key,
+    and misses exit non-zero with near-miss suggestions on stderr."""
+
+    def test_show_by_exact_slug(self):
+        code, out, err = run_cli("show", "PagerDuty/cronner")
+        self.assertEqual(code, 0, err)
+        self.assertIn("pagerduty-cronner", out)
+
+    def test_show_slug_is_case_insensitive(self):
+        # GitHub slugs are case-insensitive; ours should be too.
+        code, out, err = run_cli("show", "pagerduty/CRONNER")
+        self.assertEqual(code, 0, err)
+        self.assertIn("pagerduty-cronner", out)
+
+    def test_show_by_slug_json_matches_id_lookup(self):
+        code_slug, out_slug, _ = run_cli("show", "mozilla/notes", "--json")
+        code_id, out_id, _ = run_cli("show", "mozilla-notes", "--json")
+        self.assertEqual(code_slug, 0)
+        self.assertEqual(code_id, 0)
+        self.assertEqual(json.loads(out_slug), json.loads(out_id))
+
+    def test_every_dataset_slug_resolves(self):
+        with DATA.open() as f:
+            entries = [json.loads(line) for line in f if line.strip()]
+        for entry in entries:
+            code, out, err = run_cli("show", entry["name"])
+            self.assertEqual(code, 0, f"slug {entry['name']} failed: {err}")
+            self.assertIn(entry["id"], out)
+
+    def test_miss_suggests_near_matches_and_exits_nonzero(self):
+        code, out, err = run_cli("show", "cronner")
+        self.assertEqual(code, 1)
+        self.assertIn("no candidate", err)
+        self.assertIn("did you mean", err)
+        self.assertIn("pagerduty-cronner", err)
+
+    def test_miss_with_no_near_match_exits_nonzero_without_suggestions(self):
+        code, out, err = run_cli("show", "zzz-nope")
+        self.assertEqual(code, 1)
+        self.assertIn("no candidate", err)
+        self.assertNotIn("did you mean", err)

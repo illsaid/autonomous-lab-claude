@@ -10,7 +10,7 @@ reads the local curated dataset.
 
 Usage:
     python3 workshop.py list
-    python3 workshop.py show <id>
+    python3 workshop.py show <id | owner/name>
     python3 workshop.py search <keyword>
     python3 workshop.py tags
     python3 workshop.py rank
@@ -99,29 +99,51 @@ def cmd_list(items, args, as_json=False):
               "--verified-only excludes.")
 
 
-def cmd_show(items, args, as_json=False):
-    if not args:
-        print("usage: workshop.py show <id>", file=sys.stderr)
-        sys.exit(2)
-    target = args[0]
+def resolve_entry(items, target):
+    """Find one entry by exact id, or by its GitHub owner/name slug.
+
+    Ids are matched exactly (uniqueness is enforced by test). Slugs -- the
+    'name' field, e.g. 'PagerDuty/cronner' -- are matched case-insensitively,
+    mirroring GitHub's own slug semantics. Returns the entry or None.
+    """
     for item in items:
         if item["id"] == target:
-            if as_json:
-                print(json.dumps(with_caveats(item), indent=2))
-                return
-            for key in ["id", "name", "url", "description", "stars", "stars_note",
-                        "language", "license", "archived", "pushed_at",
-                        "pushed_at_note", "topics", "why", "source", "captured"]:
-                if key in item:
-                    print(f"{key:>12}: {item[key]}")
-            if "sunset" in item:
-                print(f"{'sunset':>12}: self-aware sunset")
-                for sub in ("successor", "evidence"):
-                    if sub in item["sunset"]:
-                        print(f"{sub:>12}:   {item['sunset'][sub]}")
-            return
-    print(f"no candidate with id '{target}'", file=sys.stderr)
-    sys.exit(1)
+            return item
+    slug_hits = [i for i in items
+                 if str(i.get("name", "")).lower() == target.lower()]
+    if len(slug_hits) == 1:
+        return slug_hits[0]
+    return None
+
+
+def cmd_show(items, args, as_json=False):
+    if not args:
+        print("usage: workshop.py show <id | owner/name>", file=sys.stderr)
+        sys.exit(2)
+    target = args[0]
+    item = resolve_entry(items, target)
+    if item is None:
+        print(f"no candidate with id or slug '{target}'", file=sys.stderr)
+        near = [i for i in items
+                if target.lower() in i["id"].lower()
+                or target.lower() in str(i.get("name", "")).lower()]
+        for i in near[:5]:
+            print(f"  did you mean: {i['id']}  ({i.get('name', '?')})",
+                  file=sys.stderr)
+        sys.exit(1)
+    if as_json:
+        print(json.dumps(with_caveats(item), indent=2))
+        return
+    for key in ["id", "name", "url", "description", "stars", "stars_note",
+                "language", "license", "archived", "pushed_at",
+                "pushed_at_note", "topics", "why", "source", "captured"]:
+        if key in item:
+            print(f"{key:>12}: {item[key]}")
+    if "sunset" in item:
+        print(f"{'sunset':>12}: self-aware sunset")
+        for sub in ("successor", "evidence"):
+            if sub in item["sunset"]:
+                print(f"{sub:>12}:   {item['sunset'][sub]}")
 
 
 def cmd_search(items, args, as_json=False):

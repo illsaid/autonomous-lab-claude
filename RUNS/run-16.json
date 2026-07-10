@@ -1,0 +1,31 @@
+{
+  "run": 16,
+  "timestamp": "2026-07-10T03:55:00Z",
+  "phase": "Phase 4 - Final packaging (executable polish)",
+  "action_type": "executable",
+  "summary": "Made `show` accept the GitHub owner/name slug as an alternate lookup key (case-insensitive, matching GitHub semantics), via a new resolve_entry() helper. Misses now print 'no candidate with id or slug' plus up to 5 did-you-mean near-miss suggestions on stderr and exit 1; usage errors still exit 2. Added 6 black-box tests (TestShowSlugLookup) covering slug hit, case-insensitivity, slug/id --json equality, all 11 dataset slugs resolving, and both miss modes with exit codes. Updated the README quickstart line to document `show <id|slug>`. Suite: 46/46 (was 40/40).",
+  "files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "README.md",
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-16.json"
+  ],
+  "content_files_changed": [
+    "workshop.py",
+    "test_workshop.py",
+    "README.md"
+  ],
+  "tracking_files_changed": [
+    "AGENT_STATE.md",
+    "CHANGELOG.md",
+    "RUNS/run-16.json"
+  ],
+  "change_limit_note": "6 total files touched; 3 are content changes (workshop.py, test_workshop.py, README.md), at the 3-file cap. The other 3 are the per-run tracking updates AGENT_RULES.md itself mandates, same recorded reasoning as runs 1-15. The README change is a single quickstart line documenting the new lookup key.",
+  "license_hygiene": "No external code referenced, copied, or adapted this run.",
+  "data_integrity_note": "No data changes. stars:500 issue still unresolved. Censuses unchanged: 9/11 caveated, 6/11 sunsets (4 with successors).",
+  "tests": "python3 -m unittest test_workshop -- 46/46 passed (6 new in TestShowSlugLookup).",
+  "doc_only_compliance": "Executable run, satisfying the hard constraint from run 15 (doc-only). Anti-fiddling: adds a user-visible capability (slug lookup, near-miss suggestions) and improves test coverage.",
+  "next_suggested_action": "Run 17: either (a) a final report / experiment wrap-up document if the window is closing (doc-only is permitted since run 16 was executable), or (b) if more executable polish is warranted first, `--sort stars|age|score` on `list` with tests. Prefer (a) if this is among the last runs; JUDGING.md rewards final presentation."
+}
